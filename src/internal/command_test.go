@@ -70,14 +70,14 @@ func TestExecute(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.Name, func(t *testing.T) {
 			cmd := Command{Parameters: tc.Params, Binary: tc.Binary}
-			stdOut, stdErr, err := cmd.Execute(&cfg, &stack)
+			output := cmd.Execute(&cfg, stack)
 			if tc.WantErr {
-				assert.Error(t, err)
+				assert.Error(t, output.Error)
 			} else {
-				assert.NoError(t, err)
+				assert.NoError(t, output.Error)
 			}
-			assert.Equal(t, tc.WantStdOut, string(stdOut))
-			assert.Equal(t, tc.WantStdErr, string(stdErr))
+			assert.Equal(t, tc.WantStdOut, string(output.StdOut))
+			assert.Equal(t, tc.WantStdErr, string(output.StdErr))
 		})
 	}
 }

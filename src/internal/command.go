@@ -6,7 +6,8 @@ import (
 )
 
 type CommandIface interface {
-	Execute() error
+	Execute(*Config, TerraformStack)
+	ExecuteForStacks(*Config, []TerraformStack) []ExecuteOutput
 }
 
 type Command struct {
@@ -14,12 +15,19 @@ type Command struct {
 	Parameters []Parameter
 }
 
+type ExecuteOutput struct {
+	Stack  TerraformStack
+	StdOut []byte
+	StdErr []byte
+	Error  error
+}
+
 //Get config, inc env & cmd
 //Get stacks
 //build & run command against stack
 //capture output, squirt to stdout
 
-func (c *Command) Execute(cfg *Config, stack *TerraformStack) ([]byte, []byte, error) {
+func (c *Command) Execute(cfg *Config, stack TerraformStack) ExecuteOutput {
 	// First we populate a slice of standard placeholders for this run
 	stdPlaceholders := stack.GetStackPlaceholders()
 	stdPlaceholders = append(stdPlaceholders, cfg.Env.GetEnvPlaceholder())
@@ -38,5 +46,18 @@ func (c *Command) Execute(cfg *Config, stack *TerraformStack) ([]byte, []byte, e
 	cmd.Stderr = &stdErr
 	cmd.Dir = stack.Path
 	err := cmd.Run()
-	return stdOut.Bytes(), stdErr.Bytes(), err
+	return ExecuteOutput{
+		Stack:  stack,
+		StdOut: stdOut.Bytes(),
+		StdErr: stdErr.Bytes(),
+		Error:  err,
+	}
+}
+
+func (c *Command) ExecuteForStacks(cfg *Config, stacks []TerraformStack) []ExecuteOutput {
+	var outSlice []ExecuteOutput
+	for i, _ := range stacks {
+		outSlice = append(outSlice, c.Execute(cfg, stacks[i]))
+	}
+	return outSlice
 }
