@@ -25,6 +25,24 @@ func (tfs *TerraformStack) ShouldRunForEnv(env Environment) bool {
 	return false
 }
 
+func (tfs *TerraformStack) GetStackPlaceholders() []Placeholder {
+	AbsPath, err := filepath.Abs(tfs.Path)
+	if err != nil {
+		return nil
+	}
+	RelPath, err := filepath.Rel("./", tfs.Path)
+	if err != nil {
+		return nil
+	}
+	return []Placeholder{{
+		Before: "StackAbsPath",
+		After:  AbsPath,
+	}, {
+		Before: "StackRelPath",
+		After:  RelPath,
+	}}
+}
+
 func FindAllStacks(path string) ([]TerraformStack, error) {
 	var stacks []TerraformStack
 
