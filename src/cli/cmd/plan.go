@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"gitlab.com/lewisedginton/aws_common/terraform_wrapper/src/internal"
 
 	"github.com/spf13/cobra"
 )
@@ -15,6 +16,10 @@ var planCmd = &cobra.Command{
 	Short: "Performs a terraform plan against all the eligible stack directories",
 	Long:  `Performs a terraform plan against all the eligible stack directories`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Apply!")
+		fmt.Println("Plan!")
+		command := internal.Command{
+			Binary:     "terraform",
+			Parameters: []internal.Parameter{&internal.SimpleParameter{Value: "plan"}},
+		}
 	},
 }
