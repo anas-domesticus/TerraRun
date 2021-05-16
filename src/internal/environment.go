@@ -6,7 +6,7 @@ type Environment struct {
 
 func (e *Environment) GetEnvPlaceholder() Placeholder {
 	return Placeholder{
-		Before: "environment",
+		Before: "Environment",
 		After:  e.Name,
 	}
 }
