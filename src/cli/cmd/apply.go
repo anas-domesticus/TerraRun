@@ -2,10 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"gitlab.com/lewisedginton/aws_common/terraform_wrapper/src/internal"
-	"os"
-
 	"github.com/spf13/cobra"
+	"gitlab.com/lewisedginton/aws_common/terraform_wrapper/src/internal"
 )
 
 func init() {
@@ -17,17 +15,11 @@ var applyCmd = &cobra.Command{
 	Short: "Performs a terraform apply against all the eligible stack directories",
 	Long:  `Performs a terraform apply against all the eligible stack directories`,
 	Run: func(cmd *cobra.Command, args []string) {
-		stacks, err := internal.FindAllStacks("./")
-		if err != nil {
-			fmt.Printf("Error occurred: %s\n", err.Error())
-			os.Exit(1)
-		}
-		command := internal.Command{
-			Binary: "terraform",
-			Parameters: []internal.Parameter{
-				&internal.SimpleParameter{Value: "apply"},
-				&internal.SimpleParameter{Value: "plan.tfplan"},
-			},
-		}
+		internal.ForAllStacks(
+			internal.Config{BaseDir: "./", Env: internal.Environment{Name: "dev"}},
+			func(config internal.Config, stack internal.TerraformStack) error {
+				fmt.Printf("Applying %s\n", stack.Path)
+				return nil
+			})
 	},
 }

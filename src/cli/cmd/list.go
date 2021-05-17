@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"gitlab.com/lewisedginton/aws_common/terraform_wrapper/src/internal"
-	"os"
 )
 
 func init() {
@@ -16,13 +15,11 @@ var listCmd = &cobra.Command{
 	Short: "Lists eligible terraform stack directories",
 	Long:  `Lists eligible terraform stack directories, searching from pwd`,
 	Run: func(cmd *cobra.Command, args []string) {
-		stacks, err := internal.FindAllStacks("./")
-		if err != nil {
-			fmt.Printf("Error occurred: %s\n", err.Error())
-			os.Exit(1)
-		}
-		for _, s := range stacks {
-			fmt.Printf("%s\n", s.Path)
-		}
+		internal.ForAllStacks(
+			internal.Config{BaseDir: "./", Env: internal.Environment{Name: "dev"}},
+			func(config internal.Config, stack internal.TerraformStack) error {
+				fmt.Printf("%s\n", stack.Path)
+				return nil
+			})
 	},
 }

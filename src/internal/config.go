@@ -1,5 +1,6 @@
 package internal
 
 type Config struct {
-	Env Environment
+	Env     Environment
+	BaseDir string
 }

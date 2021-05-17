@@ -77,3 +77,17 @@ func IsTerraformStack(path string) bool {
 	}
 	return false
 }
+
+func ForAllStacks(cfg Config, fn func(Config, TerraformStack) error) error {
+	stacks, err := FindAllStacks(cfg.BaseDir)
+	if err != nil {
+		return err
+	}
+	for _, s := range stacks {
+		err = fn(cfg, s)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
