@@ -56,7 +56,7 @@ func CheckAllValidateOutputs(config internal.Config) error {
 		}
 	}
 	if errOccurred {
-		return errors.New("one or more stacks failed validation")
+		return errors.New("one or more stacks failed validation\n")
 	}
 	return nil
 }
