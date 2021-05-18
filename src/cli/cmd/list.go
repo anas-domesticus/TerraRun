@@ -16,7 +16,7 @@ var listCmd = &cobra.Command{
 	Long:  `Lists eligible terraform stack directories, searching from pwd`,
 	Run: func(cmd *cobra.Command, args []string) {
 		internal.ForAllStacks(
-			internal.Config{BaseDir: "./", Env: internal.Environment{Name: "dev"}},
+			internal.Config{BaseDir: directory, Env: internal.Environment{Name: environment}},
 			ListStacks)
 	},
 }

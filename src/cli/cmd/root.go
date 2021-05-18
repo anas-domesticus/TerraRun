@@ -6,13 +6,13 @@ import (
 	"os"
 )
 
+var directory string
+var environment string
+
 var rootCmd = &cobra.Command{
 	Use:   "terrarun",
 	Short: "Terrarun is a helper for Terraform codebase",
 	Long:  `Terrarun helps you with your CI with Terraform codebase`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Terrarun root")
-	},
 }
 
 func Execute() {
@@ -23,5 +23,6 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringP("environment", "e", "", "name of current environment")
+	rootCmd.PersistentFlags().StringVarP(&environment, "environment", "e", "", "name of current environment")
+	rootCmd.PersistentFlags().StringVarP(&directory, "directory", "d", "./", "directory within which to look for stacks")
 }

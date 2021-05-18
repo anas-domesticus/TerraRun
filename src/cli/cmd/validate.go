@@ -21,8 +21,8 @@ var validateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := CheckAllValidateOutputs(
 			internal.Config{
-				BaseDir: "./",
-				Env:     internal.Environment{Name: "dev"},
+				BaseDir: directory,
+				Env:     internal.Environment{Name: environment},
 			})
 		if err != nil {
 			fmt.Printf("Error: %s", err.Error())
