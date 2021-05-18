@@ -34,7 +34,7 @@ func TestTFValidate(t *testing.T) {
 		},
 		{
 			"valid_stack",
-			"testdata//valid_stack",
+			"testdata/valid_stack",
 			false,
 			true,
 		},
