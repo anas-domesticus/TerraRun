@@ -35,15 +35,17 @@ func ValidateWasSuccessful(output ExecuteOutput) bool {
 
 func ValidateStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
 	fmt.Printf("Validating %s...\n", stack.Path)
+	envVars := append(os.Environ(), fmt.Sprintf("TF_PLUGIN_CACHE_DIR=%s", config.TFPluginCacheDir))
 	initCmd := GetTerraformInit()
 	initCmd.Parameters = append(initCmd.Parameters, &SimpleParameter{Value: "-backend=false"})
-	envVars := append(os.Environ(), fmt.Sprintf("TF_PLUGIN_CACHE_DIR=%s", config.TFPluginCacheDir))
-	output, err := initCmd.Execute(config, stack, envVars)
+	initCmd.EnvVars = envVars
+	output, err := initCmd.Execute(config, stack)
 	if err != nil {
 		// TODO: Add detail to error
 		return output, err
 	}
 	validateCmd := GetTerraformValidate()
-	output, err = validateCmd.Execute(config, stack, envVars)
+	validateCmd.EnvVars = envVars
+	output, err = validateCmd.Execute(config, stack)
 	return output, err
 }
