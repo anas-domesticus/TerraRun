@@ -27,6 +27,13 @@ var validateCmd = &cobra.Command{
 }
 
 func ValidateTerraform(config internal.Config, stack internal.TerraformStack) (internal.ExecuteOutput, error) {
-	//command := internal.GetTerraformValidate()
-	return internal.ExecuteOutput{}, nil
+	initCmd := internal.GetTerraformInit()
+	validateCmd := internal.GetTerraformValidate()
+	output := initCmd.Execute(config, stack)
+	if output.Error != nil {
+		return internal.ExecuteOutput{}, output.Error
+	}
+
+	output = validateCmd.Execute(config, stack)
+	return output, nil
 }
