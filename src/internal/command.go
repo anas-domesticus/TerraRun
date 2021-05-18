@@ -5,11 +5,6 @@ import (
 	"os/exec"
 )
 
-type CommandIface interface {
-	Execute(*Config, TerraformStack)
-	ExecuteForStacks(*Config, []TerraformStack) []ExecuteOutput
-}
-
 type Command struct {
 	Binary     string
 	Parameters []Parameter
@@ -22,12 +17,7 @@ type ExecuteOutput struct {
 	Error  error
 }
 
-//Get config, inc env & cmd
-//Get stacks
-//build & run command against stack
-//capture output, squirt to stdout
-
-func (c *Command) Execute(cfg *Config, stack TerraformStack) ExecuteOutput {
+func (c *Command) Execute(cfg Config, stack TerraformStack) ExecuteOutput {
 	// First we populate a slice of standard placeholders for this run
 	stdPlaceholders := stack.GetStackPlaceholders()
 	stdPlaceholders = append(stdPlaceholders, cfg.Env.GetEnvPlaceholder())
@@ -52,12 +42,4 @@ func (c *Command) Execute(cfg *Config, stack TerraformStack) ExecuteOutput {
 		StdErr: stdErr.Bytes(),
 		Error:  err,
 	}
-}
-
-func (c *Command) ExecuteForStacks(cfg *Config, stacks []TerraformStack) []ExecuteOutput {
-	var outSlice []ExecuteOutput
-	for i, _ := range stacks {
-		outSlice = append(outSlice, c.Execute(cfg, stacks[i]))
-	}
-	return outSlice
 }
