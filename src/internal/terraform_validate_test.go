@@ -47,8 +47,8 @@ func TestTFValidate(t *testing.T) {
 		{
 			"bad_stack",
 			"testdata/invalid_stack",
-			true,
 			false,
+			true,
 			false,
 		},
 	}

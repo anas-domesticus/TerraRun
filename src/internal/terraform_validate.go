@@ -1,6 +1,9 @@
 package internal
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 func GetTerraformValidate() Command {
 	cmd := NewTerraformCommand()
@@ -30,12 +33,15 @@ func ValidateWasSuccessful(output ExecuteOutput) bool {
 }
 
 func ValidateStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
+	fmt.Printf("Validating %s...\n", stack.Path)
 	initCmd := GetTerraformInit()
-	validateCmd := GetTerraformValidate()
-	output := initCmd.Execute(config, stack)
-	if output.Error != nil {
-		return ExecuteOutput{}, output.Error
+	initCmd.Parameters = append(initCmd.Parameters, &SimpleParameter{Value: "-backend=false"})
+	output, err := initCmd.Execute(config, stack)
+	if err != nil {
+		// TODO: Add detail to error
+		return output, err
 	}
-	output = validateCmd.Execute(config, stack)
-	return output, nil
+	validateCmd := GetTerraformValidate()
+	output, err = validateCmd.Execute(config, stack)
+	return output, err
 }

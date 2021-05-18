@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"gitlab.com/lewisedginton/aws_common/terraform_wrapper/src/internal"
@@ -19,6 +20,7 @@ var validateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := CheckAllValidateOutputs(internal.Config{BaseDir: "./", Env: internal.Environment{Name: "dev"}})
 		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
 			os.Exit(1)
 		}
 	},
