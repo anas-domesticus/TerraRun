@@ -28,7 +28,7 @@ func TestTFValidate(t *testing.T) {
 		},
 		{
 			"non_tf_dir",
-			"testdata/non_tf_dir",
+			"./testdata/non_tf_dir",
 			false,
 			true,
 		},

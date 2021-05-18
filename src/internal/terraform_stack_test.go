@@ -43,6 +43,8 @@ func TestFindAllStacks(t *testing.T) {
 			"testdata",
 			false,
 			[]TerraformStack{{
+				"testdata/invalid_stack",
+			}, {
 				"testdata/non_tf_dir/valid_subdir",
 			}, {
 				"testdata/valid_stack",
@@ -109,7 +111,7 @@ func TestForAllStacks(t *testing.T) {
 			"multiple_dirs",
 			"testdata",
 			false,
-			2,
+			3,
 		},
 	}
 

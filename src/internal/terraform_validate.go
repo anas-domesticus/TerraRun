@@ -3,13 +3,12 @@ package internal
 import "encoding/json"
 
 func GetTerraformValidate() Command {
-	return Command{
-		Binary: "terraform",
-		Parameters: []Parameter{
-			&SimpleParameter{Value: "validate"},
-			&SimpleParameter{Value: "-json"},
-		},
-	}
+	cmd := NewTerraformCommand()
+	cmd.Parameters = append(cmd.Parameters, []Parameter{
+		&SimpleParameter{Value: "validate"},
+		&SimpleParameter{Value: "-json"},
+	}...)
+	return cmd
 }
 
 type ValidateOutput struct {
