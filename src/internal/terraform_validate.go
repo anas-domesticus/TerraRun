@@ -3,6 +3,7 @@ package internal
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 )
 
 func GetTerraformValidate() Command {
@@ -36,12 +37,13 @@ func ValidateStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
 	fmt.Printf("Validating %s...\n", stack.Path)
 	initCmd := GetTerraformInit()
 	initCmd.Parameters = append(initCmd.Parameters, &SimpleParameter{Value: "-backend=false"})
-	output, err := initCmd.Execute(config, stack)
+	envVars := append(os.Environ(), fmt.Sprintf("TF_PLUGIN_CACHE_DIR=%s", config.TFPluginCacheDir))
+	output, err := initCmd.Execute(config, stack, envVars)
 	if err != nil {
 		// TODO: Add detail to error
 		return output, err
 	}
 	validateCmd := GetTerraformValidate()
-	output, err = validateCmd.Execute(config, stack)
+	output, err = validateCmd.Execute(config, stack, envVars)
 	return output, err
 }

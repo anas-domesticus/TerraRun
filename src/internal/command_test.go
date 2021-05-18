@@ -2,6 +2,7 @@ package internal
 
 import (
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
@@ -77,7 +78,7 @@ func TestExecute(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.Name, func(t *testing.T) {
 			cmd := Command{Parameters: tc.Params, Binary: tc.Binary}
-			output, err := cmd.Execute(cfg, stack)
+			output, err := cmd.Execute(cfg, stack, os.Environ())
 			if tc.WantErr {
 				assert.Error(t, err)
 			} else {

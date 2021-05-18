@@ -18,7 +18,7 @@ type ExecuteOutput struct {
 	Error   error
 }
 
-func (c *Command) Execute(cfg Config, stack TerraformStack) (ExecuteOutput, error) {
+func (c *Command) Execute(cfg Config, stack TerraformStack, envVars []string) (ExecuteOutput, error) {
 	// First we populate a slice of standard placeholders for this run
 	stdPlaceholders := stack.GetStackPlaceholders()
 	stdPlaceholders = append(stdPlaceholders, cfg.Env.GetEnvPlaceholder())
@@ -36,6 +36,7 @@ func (c *Command) Execute(cfg Config, stack TerraformStack) (ExecuteOutput, erro
 	cmd.Stdout = &stdOut
 	cmd.Stderr = &stdErr
 	cmd.Dir = stack.Path
+	cmd.Env = envVars
 	err := cmd.Run()
 
 	switch err.(type) {
