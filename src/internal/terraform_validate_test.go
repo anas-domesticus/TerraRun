@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -68,6 +69,65 @@ func TestTFValidate(t *testing.T) {
 			}
 			_ = json.Unmarshal(output.StdOut, &valOutput)
 			assert.Equal(t, tc.Valid, valOutput.Valid)
+		})
+	}
+}
+
+func TestValidateWasSuccessful(t *testing.T) {
+	tests := []struct {
+		Name  string
+		Input ExecuteOutput
+		Valid bool
+	}{
+		{
+			"success",
+			ExecuteOutput{
+				Stack:   TerraformStack{},
+				Command: &Command{},
+				StdOut:  []byte(`{"valid":true,"error_count":0,"warning_count":0,"diagnostics":[]}`),
+				StdErr:  nil,
+				Error:   nil,
+			},
+			true,
+		},
+		{
+			"failure",
+			ExecuteOutput{
+				Stack:   TerraformStack{},
+				Command: &Command{},
+				StdOut:  []byte(`{"valid":false,"error_count":1,"warning_count":0,"diagnostics":[]}`),
+				StdErr:  nil,
+				Error:   nil,
+			},
+			false,
+		},
+		{
+			"non-zero exit code",
+			ExecuteOutput{
+				Stack:   TerraformStack{},
+				Command: &Command{},
+				StdOut:  nil,
+				StdErr:  nil,
+				Error:   errors.New("some error"),
+			},
+			false,
+		},
+		{
+			"wrong json",
+			ExecuteOutput{
+				Stack:   TerraformStack{},
+				Command: &Command{},
+				StdOut:  []byte(`{"totally_unrelated_json":"yes"}`),
+				StdErr:  nil,
+				Error:   nil,
+			},
+			false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.Name, func(t *testing.T) {
+			assert.Equal(t, tc.Valid, ValidateWasSuccessful(tc.Input))
 		})
 	}
 }
