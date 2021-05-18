@@ -27,12 +27,6 @@ var applyCmd = &cobra.Command{
 }
 
 func ApplyTerraform(config internal.Config, stack internal.TerraformStack) (internal.ExecuteOutput, error) {
-	//command := internal.Command{
-	//	Binary: "terraform",
-	//	Parameters: []internal.Parameter{
-	//		&internal.SimpleParameter{Value: "apply"},
-	//		&internal.SimpleParameter{Value: "plan.tfplan"},
-	//	},
-	//}
+	//command := internal.GetTerraformApply()
 	return internal.ExecuteOutput{}, nil
 }
