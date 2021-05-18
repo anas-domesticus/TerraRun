@@ -17,9 +17,11 @@ var listCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		internal.ForAllStacks(
 			internal.Config{BaseDir: "./", Env: internal.Environment{Name: "dev"}},
-			func(config internal.Config, stack internal.TerraformStack) error {
-				fmt.Printf("%s\n", stack.Path)
-				return nil
-			})
+			ListStacks)
 	},
+}
+
+func ListStacks(config internal.Config, stack internal.TerraformStack) (internal.ExecuteOutput, error) {
+	fmt.Println(stack.Path)
+	return internal.ExecuteOutput{}, nil
 }

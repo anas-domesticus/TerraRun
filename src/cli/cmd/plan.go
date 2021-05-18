@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"gitlab.com/lewisedginton/aws_common/terraform_wrapper/src/internal"
 )
@@ -17,9 +16,16 @@ var planCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		internal.ForAllStacks(
 			internal.Config{BaseDir: "./", Env: internal.Environment{Name: "dev"}},
-			func(config internal.Config, stack internal.TerraformStack) error {
-				fmt.Printf("Planning %s\n", stack.Path)
-				return nil
-			})
+			PlanTerraform)
 	},
+}
+
+func PlanTerraform(config internal.Config, stack internal.TerraformStack) (internal.ExecuteOutput, error) {
+	//command := internal.Command{
+	//	Binary: "terraform",
+	//	Parameters: []internal.Parameter{
+	//		&internal.SimpleParameter{Value: "plan"},
+	//	},
+	//}
+	return internal.ExecuteOutput{}, nil
 }

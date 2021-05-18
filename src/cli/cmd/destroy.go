@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"gitlab.com/lewisedginton/aws_common/terraform_wrapper/src/internal"
 )
@@ -17,9 +16,16 @@ var destroyCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		internal.ForAllStacks(
 			internal.Config{BaseDir: "./", Env: internal.Environment{Name: "dev"}},
-			func(config internal.Config, stack internal.TerraformStack) error {
-				fmt.Printf("Destroying %s\n", stack.Path)
-				return nil
-			})
+			DestroyTerraform)
 	},
+}
+
+func DestroyTerraform(config internal.Config, stack internal.TerraformStack) (internal.ExecuteOutput, error) {
+	//command := internal.Command{
+	//	Binary: "terraform",
+	//	Parameters: []internal.Parameter{
+	//		&internal.SimpleParameter{Value: "destroy"},
+	//	},
+	//}
+	return internal.ExecuteOutput{}, nil
 }
