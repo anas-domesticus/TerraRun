@@ -70,3 +70,56 @@ func TestShouldRunForEnv(t *testing.T) {
 	assert.False(t, stack.ShouldRunForEnv(Environment{Name: "prod"}))
 	assert.True(t, stack.ShouldRunForEnv(Environment{Name: "dev"}))
 }
+
+func TestForAllStacks(t *testing.T) {
+	testFunc := func(cfg Config, stack TerraformStack) (ExecuteOutput, error) {
+		return ExecuteOutput{}, nil
+	}
+	tests := []struct {
+		Name    string
+		Input   string
+		WantErr bool
+		WantLen int
+	}{
+		{
+			"empty_string",
+			"",
+			true,
+			0,
+		},
+		{
+			"not_a_directory",
+			"somewhere_made_up",
+			true,
+			0,
+		},
+		{
+			"empty dir",
+			"testdata/empty",
+			false,
+			0,
+		},
+		{
+			"single_dir",
+			"testdata/non_tf_dir/valid_subdir",
+			false,
+			1,
+		},
+		{
+			"multiple_dirs",
+			"testdata",
+			false,
+			2,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.Name, func(t *testing.T) {
+			output, err := ForAllStacks(Config{BaseDir: tc.Input}, testFunc)
+			if tc.WantErr {
+				assert.Error(t, err)
+			}
+			assert.Equal(t, tc.WantLen, len(output))
+		})
+	}
+}
