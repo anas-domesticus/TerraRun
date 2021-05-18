@@ -11,10 +11,11 @@ type Command struct {
 }
 
 type ExecuteOutput struct {
-	Stack  TerraformStack
-	StdOut []byte
-	StdErr []byte
-	Error  error
+	Stack   TerraformStack
+	Command *Command
+	StdOut  []byte
+	StdErr  []byte
+	Error   error
 }
 
 func (c *Command) Execute(cfg Config, stack TerraformStack) ExecuteOutput {
@@ -37,9 +38,10 @@ func (c *Command) Execute(cfg Config, stack TerraformStack) ExecuteOutput {
 	cmd.Dir = stack.Path
 	err := cmd.Run()
 	return ExecuteOutput{
-		Stack:  stack,
-		StdOut: stdOut.Bytes(),
-		StdErr: stdErr.Bytes(),
-		Error:  err,
+		Stack:   stack,
+		Command: c,
+		StdOut:  stdOut.Bytes(),
+		StdErr:  stdErr.Bytes(),
+		Error:   err,
 	}
 }

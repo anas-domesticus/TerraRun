@@ -10,16 +10,6 @@ func GetTerraformInit() Command {
 	}
 }
 
-func GetTerraformValidate() Command {
-	return Command{
-		Binary: "terraform",
-		Parameters: []Parameter{
-			&SimpleParameter{Value: "validate"},
-			&SimpleParameter{Value: "-json"},
-		},
-	}
-}
-
 func GetTerraformPlan() Command {
 	return Command{
 		Binary: "terraform",
