@@ -15,7 +15,7 @@ func GetTerraformValidate() Command {
 		Binary: "terraform",
 		Parameters: []Parameter{
 			&SimpleParameter{Value: "validate"},
-			&SimpleParameter{Value: "-input=false"},
+			&SimpleParameter{Value: "-json"},
 		},
 	}
 }
@@ -25,7 +25,7 @@ func GetTerraformPlan() Command {
 		Binary: "terraform",
 		Parameters: []Parameter{
 			&SimpleParameter{Value: "plan"},
-			&SimpleParameter{Value: "--out=plan.tfplan"},
+			&SimpleParameter{Value: "-out=plan.tfplan"},
 			&SimpleParameter{Value: "-input=false"},
 		},
 	}

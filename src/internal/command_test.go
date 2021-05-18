@@ -41,7 +41,7 @@ func TestExecute(t *testing.T) {
 		},
 		{
 			"output_test",
-			"/usr/bin/echo",
+			"/bin/echo",
 			[]Parameter{&SimpleParameter{Value: "foo"}},
 			false,
 			"foo\n",
@@ -49,7 +49,7 @@ func TestExecute(t *testing.T) {
 		},
 		{
 			"env_param_injection",
-			"/usr/bin/echo",
+			"/bin/echo",
 			[]Parameter{&ParameterWithPlaceholders{Value: "{{Environment}}"}},
 			false,
 			"test\n",
@@ -57,7 +57,7 @@ func TestExecute(t *testing.T) {
 		},
 		{
 			"stack_param_injection",
-			"/usr/bin/echo",
+			"/bin/echo",
 			[]Parameter{&ParameterWithPlaceholders{Value: "{{StackRelPath}}"}},
 			false,
 			"testdata/valid_stack\n",
