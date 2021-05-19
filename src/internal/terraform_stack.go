@@ -13,6 +13,9 @@ type TerraformStack struct {
 }
 
 func (tfs *TerraformStack) ShouldRunForEnv(env Environment) bool {
+	if env.Name == "" {
+		return true
+	}
 	files, err := ioutil.ReadDir(tfs.Path)
 	if err != nil {
 		return false
@@ -85,11 +88,13 @@ func ForAllStacks(cfg Config, fn func(Config, TerraformStack) (ExecuteOutput, er
 	}
 	var outputs []ExecuteOutput
 	for _, s := range stacks {
-		out, err := fn(cfg, s)
-		if err != nil {
-			return outputs, err
+		if s.ShouldRunForEnv(cfg.Env) {
+			out, err := fn(cfg, s)
+			if err != nil {
+				return outputs, err
+			}
+			outputs = append(outputs, out)
 		}
-		outputs = append(outputs, out)
 	}
 	return outputs, nil
 }
