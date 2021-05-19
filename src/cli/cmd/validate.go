@@ -6,7 +6,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"gitlab.com/lewisedginton/aws_common/terraform_wrapper/src/internal"
-	"io/ioutil"
 	"os"
 )
 
@@ -32,12 +31,7 @@ var validateCmd = &cobra.Command{
 }
 
 func CheckAllValidateOutputs(config internal.Config) error {
-	dir, err := ioutil.TempDir("", "tf-cache")
-	if err != nil {
-		fmt.Printf("Failed to create temporary directory")
-		os.Exit(1)
-	}
-	config.TFPluginCacheDir = dir
+	config.TFPluginCacheDir = GetCacheDir()
 	outputs, err := internal.ForAllStacks(
 		config,
 		internal.ValidateStack)

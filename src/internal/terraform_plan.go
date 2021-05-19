@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"encoding/json"
 	"fmt"
 )
 
@@ -29,19 +28,11 @@ type PlanOutput struct {
 }
 
 func PlanWasSuccessful(output ExecuteOutput) bool {
-	if output.Error != nil {
-		return false
-	}
-	val := ValidateOutput{}
-	err := json.Unmarshal(output.StdOut, &val)
-	if err != nil {
-		return false
-	}
-	return val.Valid
+	return output.Error == nil
 }
 
 func PlanStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
-	fmt.Printf("Planning %s...\n", stack.Path)
+	fmt.Printf("Planning %s...", stack.Path)
 	output, err := InitStack(config, stack)
 	if err != nil {
 		// TODO: Add detail to error

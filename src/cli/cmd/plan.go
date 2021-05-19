@@ -6,7 +6,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"gitlab.com/lewisedginton/aws_common/terraform_wrapper/src/internal"
-	"io/ioutil"
 	"os"
 )
 
@@ -32,31 +31,26 @@ var planCmd = &cobra.Command{
 }
 
 func CheckAllPlanOutputs(config internal.Config) error {
-	dir, err := ioutil.TempDir("", "tf-cache")
-	if err != nil {
-		fmt.Printf("Failed to create temporary directory")
-		os.Exit(1)
-	}
-	config.TFPluginCacheDir = dir
+	config.TFPluginCacheDir = GetCacheDir()
 	outputs, err := internal.ForAllStacks(
 		config,
-		internal.ValidateStack)
+		internal.PlanStack)
 	if err != nil {
 		return err
 	}
 	errOccurred := false
 	for _, out := range outputs {
-		if internal.ValidateWasSuccessful(out) {
-			color.Green("Validation passed for %s\n", out.Stack.Path)
+		if internal.PlanWasSuccessful(out) {
+			color.Green("Plan OK for %s\n", out.Stack.Path)
 		} else {
-			color.Red("Validation failed for %s\n", out.Stack.Path)
+			color.Red("Plan failed for %s\n", out.Stack.Path)
 			color.Red(string(out.StdOut))
 			color.Red(string(out.StdErr))
 			errOccurred = true
 		}
 	}
 	if errOccurred {
-		return errors.New("one or more stacks failed validation\n")
+		return errors.New("one or more stacks failed to plan\n")
 	}
 	return nil
 }
