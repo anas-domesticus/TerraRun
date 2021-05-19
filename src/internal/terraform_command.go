@@ -5,6 +5,6 @@ import "os"
 func NewTerraformCommand() Command {
 	return Command{
 		Binary:  "terraform",
-		EnvVars: os.Environ(),
+		EnvVars: append(os.Environ(), "TF_IN_AUTOMATION=true"),
 	}
 }
