@@ -82,42 +82,62 @@ func TestForAllStacks(t *testing.T) {
 		Input   string
 		WantErr bool
 		WantLen int
+		Environment
 	}{
 		{
 			"empty_string",
 			"",
 			true,
 			0,
+			Environment{},
 		},
 		{
 			"not_a_directory",
 			"somewhere_made_up",
 			true,
 			0,
+			Environment{},
 		},
 		{
 			"empty dir",
 			"testdata/empty",
 			false,
 			0,
+			Environment{},
 		},
 		{
 			"single_dir",
 			"testdata/non_tf_dir/valid_subdir",
 			false,
 			1,
+			Environment{},
 		},
 		{
 			"multiple_dirs",
 			"testdata",
 			false,
 			3,
+			Environment{},
+		},
+		{
+			"env_filter_test",
+			"testdata",
+			false,
+			1,
+			Environment{Name: "test"},
+		},
+		{
+			"env_filter_dev",
+			"testdata",
+			false,
+			2,
+			Environment{Name: "dev"},
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.Name, func(t *testing.T) {
-			output, err := ForAllStacks(Config{BaseDir: tc.Input}, testFunc)
+			output, err := ForAllStacks(Config{BaseDir: tc.Input, Env: tc.Environment}, testFunc)
 			if tc.WantErr {
 				assert.Error(t, err)
 			}
