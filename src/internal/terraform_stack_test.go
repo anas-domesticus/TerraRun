@@ -71,6 +71,7 @@ func TestShouldRunForEnv(t *testing.T) {
 	stack := TerraformStack{Path: "testdata/valid_stack"}
 	assert.False(t, stack.ShouldRunForEnv(Environment{Name: "prod"}))
 	assert.True(t, stack.ShouldRunForEnv(Environment{Name: "dev"}))
+	assert.True(t, stack.ShouldRunForEnv(Environment{}))
 }
 
 func TestForAllStacks(t *testing.T) {
