@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Terraform Report</title>
+</head>
+<body>
+<table>
+    {{ range . }}
+    {{ with .Plan }}
+        <tr>
+            <td>{{ .TerraformVersion }}</td>
+        </tr>
+    {{ end }}
+    {{ end }}
+</table>
+</body>
+</html>
