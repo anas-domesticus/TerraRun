@@ -32,6 +32,9 @@ func PlanStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
 		return output, err
 	}
 	planCmd := GetTerraformPlan()
+	if config.Env.Name != "" {
+		planCmd.Parameters = append(planCmd.Parameters, &SimpleParameter{Value: fmt.Sprintf("-var-file=\"%s.tfvars\"", config.Env.Name)})
+	}
 	output, err = planCmd.Execute(config, stack)
 	return output, err
 }
