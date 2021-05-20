@@ -2,13 +2,19 @@ package internal
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 )
+
+func GetPlanFilename() string {
+	return "plan.tfplan"
+}
 
 func GetTerraformPlan() Command {
 	cmd := NewTerraformCommand()
 	cmd.Parameters = append(cmd.Parameters, []Parameter{
 		&SimpleParameter{Value: "plan"},
-		&SimpleParameter{Value: "-out=plan.tfplan"},
+		&SimpleParameter{Value: fmt.Sprintf("-out=%s", GetPlanFilename())},
 		&SimpleParameter{Value: "-input=false"},
 	}...)
 	return cmd
@@ -19,7 +25,7 @@ func GetTerraformShowPlan() Command {
 	cmd.Parameters = append(cmd.Parameters, []Parameter{
 		&SimpleParameter{Value: "show"},
 		&SimpleParameter{Value: "-json"},
-		&SimpleParameter{Value: "plan.tfplan"},
+		&SimpleParameter{Value: GetPlanFilename()},
 	}...)
 	return cmd
 }
@@ -41,4 +47,9 @@ func PlanStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
 	planCmd := GetTerraformPlan()
 	output, err = planCmd.Execute(config, stack)
 	return output, err
+}
+
+func PlanPresent(stack TerraformStack) bool {
+	_, err := os.Stat(filepath.Join(stack.Path, GetPlanFilename()))
+	return err == nil
 }

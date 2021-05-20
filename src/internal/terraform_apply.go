@@ -2,15 +2,13 @@ package internal
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 )
 
 func GetTerraformApply() Command {
 	cmd := NewTerraformCommand()
 	cmd.Parameters = append(cmd.Parameters, []Parameter{
 		&SimpleParameter{Value: "apply"},
-		&SimpleParameter{Value: "plan.tfplan"},
+		&SimpleParameter{Value: GetPlanFilename()},
 	}...)
 	return cmd
 }
@@ -35,9 +33,4 @@ func ApplyStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
 	applyCmd := GetTerraformApply()
 	output, err = applyCmd.Execute(config, stack)
 	return output, err
-}
-
-func PlanPresent(stack TerraformStack) bool {
-	_, err := os.Stat(filepath.Join(stack.Path, "plan.tfplan"))
-	return err == nil
 }
