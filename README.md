@@ -2,7 +2,7 @@
 
 WARNING: This software is currently very young & immature, potentially unsafe to use. Be careful.
 
-This is a wrapper to Terraform, it allows you to run multiple Terraform stacks in a single command, it does not require any non-standard Terraform HCL code.
+This is a wrapper to Terraform, it allows you to run multiple Terraform stacks in a single command.
 
 It is designed to make Terraform easier to use in automation. Unlike another well-known Terraform wrapper (TerraGrunt), it requires no non-standard HCL & doesn't incite users to box everything into highly parameterised modules.
 
