@@ -4,11 +4,26 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
-func TestTFValidate(t *testing.T) {
+func CleanTestDir() {
+	remove := []string{
+		"testdata/valid_stack/plan.tfplan",
+		"testdata/valid_stack/.terraform",
+		"testdata/valid_stack/.terraform.lock.hcl",
+		"testdata/non_tf_dir/valid_subdir/plan.tfplan",
+		"testdata/non_tf_dir/valid_subdir/.terraform",
+		"testdata/non_tf_dir/valid_subdir/.terraform.lock.hcl",
+	}
+	for _, v := range remove {
+		os.RemoveAll(v)
+	}
+}
 
+func TestTFValidate(t *testing.T) {
+	CleanTestDir()
 	tests := []struct {
 		Name          string
 		Path          string
@@ -71,6 +86,7 @@ func TestTFValidate(t *testing.T) {
 			assert.Equal(t, tc.Valid, valOutput.Valid)
 		})
 	}
+	CleanTestDir()
 }
 
 func TestValidateWasSuccessful(t *testing.T) {

@@ -3,11 +3,13 @@ package internal
 import (
 	"errors"
 	"github.com/stretchr/testify/assert"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestTFPlan(t *testing.T) {
-
+	CleanTestDir()
 	tests := []struct {
 		Name          string
 		Path          string
@@ -58,6 +60,11 @@ func TestTFPlan(t *testing.T) {
 				assert.Error(t, output.Error)
 			} else {
 				assert.NoError(t, output.Error)
+			}
+			// Check that a plan file was output
+			if !tc.WantErr && !tc.WantOutputErr {
+				_, err := os.Stat(filepath.Join(tc.Path, "plan.tfplan"))
+				assert.NoError(t, err)
 			}
 		})
 	}
