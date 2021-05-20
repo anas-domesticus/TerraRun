@@ -20,19 +20,6 @@ func GetTerraformPlan() Command {
 	return cmd
 }
 
-func GetTerraformShowPlan() Command {
-	cmd := NewTerraformCommand()
-	cmd.Parameters = append(cmd.Parameters, []Parameter{
-		&SimpleParameter{Value: "show"},
-		&SimpleParameter{Value: "-json"},
-		&SimpleParameter{Value: GetPlanFilename()},
-	}...)
-	return cmd
-}
-
-type PlanOutput struct {
-}
-
 func PlanWasSuccessful(output ExecuteOutput) bool {
 	return output.Error == nil && PlanPresent(output.Stack)
 }
@@ -45,6 +32,9 @@ func PlanStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
 		return output, err
 	}
 	planCmd := GetTerraformPlan()
+	if config.Env.Name != "" {
+		planCmd.Parameters = append(planCmd.Parameters, &SimpleParameter{Value: fmt.Sprintf("-var-file=\"%s.tfvars\"", config.Env.Name)})
+	}
 	output, err = planCmd.Execute(config, stack)
 	return output, err
 }

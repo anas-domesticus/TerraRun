@@ -6,11 +6,13 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"gitlab.com/lewisedginton/aws_common/terraform_wrapper/src/internal"
+	"io/ioutil"
 	"os"
 )
 
 func init() {
 	rootCmd.AddCommand(planCmd)
+	planCmd.Flags().BoolVarP(&outputPlanReport, "report", "r", false, "if set, plan will output an HTML plan report to plan.html")
 }
 
 var planCmd = &cobra.Command{
@@ -38,10 +40,14 @@ func CheckAllPlanOutputs(config internal.Config) error {
 	if err != nil {
 		return err
 	}
+	var stacksForReport []internal.TerraformStack
 	errOccurred := false
 	for _, out := range outputs {
 		if internal.PlanWasSuccessful(out) {
 			color.Green("Plan OK for %s\n", out.Stack.Path)
+			if outputPlanReport {
+				stacksForReport = append(stacksForReport, out.Stack)
+			}
 		} else {
 			color.Red("Plan failed for %s\n", out.Stack.Path)
 			color.Red(string(out.StdOut))
@@ -52,5 +58,23 @@ func CheckAllPlanOutputs(config internal.Config) error {
 	if errOccurred {
 		return errors.New("one or more stacks failed to plan\n")
 	}
+
+	// Report generation
+	if outputPlanReport {
+		var reportSet internal.ShowOutputSet
+		for _, stack := range stacksForReport {
+			out, err := internal.GetShowOutput(config, stack)
+			if err != nil {
+				fmt.Printf("failed to get JSON data for: %s", stack.Path)
+				continue
+			}
+			reportSet = append(reportSet, out)
+		}
+		err := ioutil.WriteFile("report.html", reportSet.GenerateHTMLReport(), 0644)
+		if err != nil {
+			fmt.Printf("Failed to write report: %s", err.Error())
+		}
+	}
+
 	return nil
 }
