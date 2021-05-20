@@ -28,7 +28,7 @@ type PlanOutput struct {
 }
 
 func PlanWasSuccessful(output ExecuteOutput) bool {
-	return output.Error == nil
+	return output.Error == nil && PlanPresent(output.Stack)
 }
 
 func PlanStack(config Config, stack TerraformStack) (ExecuteOutput, error) {

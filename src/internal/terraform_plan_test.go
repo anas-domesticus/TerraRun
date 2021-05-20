@@ -71,6 +71,11 @@ func TestTFPlan(t *testing.T) {
 }
 
 func TestPlanWasSuccessful(t *testing.T) {
+	testStack := TerraformStack{Path: "testdata/valid_stack"}
+	f, _ := os.Create(filepath.Join(testStack.Path, "/plan.tfplan"))
+	f.Write([]byte("some stuff"))
+	f.Close()
+
 	tests := []struct {
 		Name  string
 		Input ExecuteOutput
@@ -79,7 +84,7 @@ func TestPlanWasSuccessful(t *testing.T) {
 		{
 			"success",
 			ExecuteOutput{
-				Stack:   TerraformStack{},
+				Stack:   testStack,
 				Command: &Command{},
 				StdOut:  []byte(`Some stuff`),
 				StdErr:  nil,
@@ -90,7 +95,7 @@ func TestPlanWasSuccessful(t *testing.T) {
 		{
 			"non-zero exit code",
 			ExecuteOutput{
-				Stack:   TerraformStack{},
+				Stack:   testStack,
 				Command: &Command{},
 				StdOut:  nil,
 				StdErr:  nil,
@@ -105,4 +110,5 @@ func TestPlanWasSuccessful(t *testing.T) {
 			assert.Equal(t, tc.Valid, PlanWasSuccessful(tc.Input))
 		})
 	}
+	CleanTestDir()
 }
