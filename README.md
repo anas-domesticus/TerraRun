@@ -24,6 +24,15 @@ It understands the concept of environments, which are based on the presence of a
 
 `terrarun apply -e dev` - Applies plans already created in all Terraform stacks, searching from current directory, will fail if plans do not exist, will use dev.tfvars files
 
+## Building from source:
+
+- Navigate to src/cli
+- `go build -o terrarun`
+
+This will create a binary called terrarun, put it whereever you like.
+
+Alternatively, the provided Dockerfile runs the test suite, then builds a clean docker image with the latest version of Terraform built in
+
 Future stuff:
 - Running tasks in parallel
 - YAML config for custom commands, linting etc...
