@@ -13,9 +13,11 @@ func CleanTestDir() {
 		"testdata/valid_stack/plan.tfplan",
 		"testdata/valid_stack/.terraform",
 		"testdata/valid_stack/.terraform.lock.hcl",
+		"testdata/valid_stack/terraform.tfstate",
 		"testdata/non_tf_dir/valid_subdir/plan.tfplan",
 		"testdata/non_tf_dir/valid_subdir/.terraform",
 		"testdata/non_tf_dir/valid_subdir/.terraform.lock.hcl",
+		"testdata/non_tf_dir/terraform.tfstate",
 	}
 	for _, v := range remove {
 		os.RemoveAll(v)
