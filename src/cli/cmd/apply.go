@@ -34,7 +34,7 @@ func CheckAllApplyOutputs(config internal.Config) error {
 	config.TFPluginCacheDir = GetCacheDir()
 	outputs, err := internal.ForAllStacks(
 		config,
-		internal.PlanStack)
+		internal.ApplyStack)
 	if err != nil {
 		return err
 	}
