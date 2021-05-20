@@ -2,7 +2,6 @@ package internal
 
 import (
 	"encoding/json"
-	"fmt"
 	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -16,6 +15,6 @@ func TestShowOutputSet_GenerateHTMLReport(t *testing.T) {
 	set = append(set, ShowOutput{Stack: TerraformStack{Path: "some_path"}, Plan: output})
 	set = append(set, ShowOutput{Stack: TerraformStack{Path: "some_other_path"}, Plan: output})
 	html := set.GenerateHTMLReport()
-	fmt.Print(html)
 	assert.True(t, len(html) > 0)
+
 }

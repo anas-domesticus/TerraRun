@@ -18,7 +18,7 @@
     {{ range . }}
     <div class="row">
         <div class="col-md-3">
-            <h5>{{ .StackName }}</h5>
+            <a href="#{{ .StackName }}"><h5>{{ .StackName }}</h5></a>
         </div>
         <div class="col-md-9">
             <ul class="list-inline">
@@ -26,9 +26,34 @@
                 <li class="list-inline-item bg-warning border border-warning rounded">Update: {{ .Update }}</li>
                 <li class="list-inline-item bg-danger border border-danger rounded">Destroy: {{ .Destroy }}</li>
                 <li class="list-inline-item bg-info border border-info rounded">Noop: {{ .Noop }}</li>
+                <li class="list-inline-item bg-secondary border border-info rounded">Replace: {{ .Replace }}</li>
             </ul>
         </div>
     </div>
+    {{ end }}
+    {{ range . }}
+    <div class="row">
+        <div class="bg-info col-md-12">
+            <h5 id="{{ .StackName }}">{{ .StackName }}</h5>
+        </div>
+    </div>
+    {{ range .ChangeDetails }}
+    <div class="row">
+        <div class="col-md-12 bg-warning">{{ .ResourceName }}</div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <pre><code>
+                {{ .Before }}
+            </code></pre>
+        </div>
+        <div class="col-md-6">
+            <pre><code>
+                {{ .After }}
+            </code></pre>
+        </div>
+    </div>
+    {{ end }}
     {{ end }}
 </div>
 </body>
