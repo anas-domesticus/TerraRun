@@ -44,3 +44,4 @@ Alternatively, the provided Dockerfile runs the test suite, then builds a clean 
 ## Future stuff:
 - Running tasks in parallel
 - YAML config for custom commands, linting etc...
+- Pre/post command hooks
