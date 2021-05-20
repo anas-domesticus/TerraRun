@@ -3,6 +3,7 @@ package internal
 import (
 	"bytes"
 	_ "embed"
+	"encoding/json"
 	"html/template"
 )
 
@@ -12,7 +13,9 @@ var reportTemplate string
 type ShowOutputSet []ShowOutput
 
 func (sos *ShowOutputSet) GenerateHTMLReport() []byte {
-	t, err := template.New("report").Parse(reportTemplate)
+	t, err := template.New("report").
+		Funcs(template.FuncMap{"getJSONString": GetJSONString}).
+		Parse(reportTemplate)
 	if err != nil {
 		return nil
 	}
@@ -23,4 +26,12 @@ func (sos *ShowOutputSet) GenerateHTMLReport() []byte {
 	}
 
 	return rendered.Bytes()
+}
+
+func GetJSONString(input interface{}) string {
+	data, err := json.MarshalIndent(input, "", "\t")
+	if err != nil {
+		return ""
+	}
+	return string(data)
 }

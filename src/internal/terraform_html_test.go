@@ -13,7 +13,8 @@ func TestShowOutputSet_GenerateHTMLReport(t *testing.T) {
 	output := tfjson.Plan{}
 	json.Unmarshal([]byte(testJson), &output)
 	set := ShowOutputSet{}
-	set = append(set, ShowOutput{Plan: output})
+	set = append(set, ShowOutput{Stack: TerraformStack{Path: "some_path"}, Plan: output})
+	set = append(set, ShowOutput{Stack: TerraformStack{Path: "some_other_path"}, Plan: output})
 	html := set.GenerateHTMLReport()
 	fmt.Print(html)
 	assert.True(t, len(html) > 0)

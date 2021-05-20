@@ -32,10 +32,12 @@ func GetShowOutput(config Config, stack TerraformStack) (ShowOutput, error) {
 	output := tfjson.Plan{}
 	err = json.Unmarshal(data, &output)
 	return ShowOutput{
-		Plan: output,
+		Stack: stack,
+		Plan:  output,
 	}, err
 }
 
 type ShowOutput struct {
-	Plan tfjson.Plan
+	Stack TerraformStack
+	Plan  tfjson.Plan
 }
