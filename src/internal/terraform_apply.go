@@ -22,7 +22,13 @@ func ApplyWasSuccessful(output ExecuteOutput) bool {
 
 func ApplyStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
 	if !PlanPresent(stack) {
-		return ExecuteOutput{}, fmt.Errorf("plan file missing for: %s", stack.Path)
+		return ExecuteOutput{
+			Stack:   stack,
+			Command: nil,
+			StdOut:  nil,
+			StdErr:  nil,
+			Error:   fmt.Errorf("plan file missing for: %s", stack.Path),
+		}, nil
 	}
 	fmt.Printf("Applying %s...\n", stack.Path)
 	output, err := InitStack(config, stack)
