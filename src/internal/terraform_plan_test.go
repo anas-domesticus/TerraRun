@@ -8,14 +8,15 @@ import (
 	"testing"
 )
 
-func TestTFPlan(t *testing.T) {
-	CleanTestDir()
-	tests := []struct {
-		Name          string
-		Path          string
-		WantErr       bool
-		WantOutputErr bool
-	}{
+type PlanApplyTest struct {
+	Name          string
+	Path          string
+	WantErr       bool
+	WantOutputErr bool
+}
+
+func GetPlanApplyTests() []PlanApplyTest {
+	return []PlanApplyTest{
 		{
 			"empty_string",
 			"",
@@ -47,8 +48,11 @@ func TestTFPlan(t *testing.T) {
 			true,
 		},
 	}
+}
 
-	for _, tc := range tests {
+func TestTFPlan(t *testing.T) {
+	CleanTestDir()
+	for _, tc := range GetPlanApplyTests() {
 		t.Run(tc.Name, func(t *testing.T) {
 			output, err := PlanStack(Config{BaseDir: "./"}, TerraformStack{Path: tc.Path})
 			if tc.WantErr {
