@@ -33,6 +33,6 @@ This will create a binary called terrarun, put it whereever you like.
 
 Alternatively, the provided Dockerfile runs the test suite, then builds a clean docker image with the latest version of Terraform built in
 
-Future stuff:
+## Future stuff:
 - Running tasks in parallel
 - YAML config for custom commands, linting etc...
