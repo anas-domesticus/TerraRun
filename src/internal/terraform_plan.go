@@ -49,6 +49,15 @@ func PlanStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
 	return output, err
 }
 
+func GetPlanJSON(config Config, stack TerraformStack) ([]byte, error) {
+	showCmd := GetTerraformShowPlan()
+	output, err := showCmd.Execute(config, stack)
+	if err != nil {
+		return nil, err
+	}
+	return output.StdOut, output.Error
+}
+
 func PlanPresent(stack TerraformStack) bool {
 	_, err := os.Stat(filepath.Join(stack.Path, GetPlanFilename()))
 	return err == nil
