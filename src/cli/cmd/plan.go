@@ -12,7 +12,7 @@ import (
 
 func init() {
 	rootCmd.AddCommand(planCmd)
-	planCmd.Flags().BoolVarP(&outputPlanReport, "report", "r", false, "if set, plan will output an HTML plan report to plan.html"))
+	planCmd.Flags().BoolVarP(&outputPlanReport, "report", "r", false, "if set, plan will output an HTML plan report to plan.html")
 }
 
 var planCmd = &cobra.Command{
@@ -60,7 +60,7 @@ func CheckAllPlanOutputs(config internal.Config) error {
 	}
 
 	// Report generation
-	if outputPlanReport{
+	if outputPlanReport {
 		var reportSet internal.ShowOutputSet
 		for _, stack := range stacksForReport {
 			out, err := internal.GetShowOutput(config, stack)
