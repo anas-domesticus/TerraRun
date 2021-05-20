@@ -6,9 +6,6 @@ import (
 	"os"
 )
 
-var directory string
-var environment string
-
 var rootCmd = &cobra.Command{
 	Use:   "terrarun",
 	Short: "Terrarun is a helper for Terraform codebase",

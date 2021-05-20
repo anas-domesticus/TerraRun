@@ -20,9 +20,6 @@ func GetTerraformPlan() Command {
 	return cmd
 }
 
-type PlanOutput struct {
-}
-
 func PlanWasSuccessful(output ExecuteOutput) bool {
 	return output.Error == nil && PlanPresent(output.Stack)
 }
