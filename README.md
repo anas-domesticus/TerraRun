@@ -4,7 +4,15 @@ WARNING: This software is currently very young & immature, potentially unsafe to
 
 This is a wrapper to Terraform, it allows you to run multiple Terraform stacks in a single command, it does not require any non-standard Terraform HCL code.
 
-It understands the concept of environments, which are based on the presence of a tfvars file in the root of the stack in question.
+It is designed to make Terraform easier to use in automation. Unlike another well-known Terraform wrapper (TerraGrunt), it requires no non-standard HCL & doesn't incite users to box everything into highly parameterised modules.
+
+It understands the concept of environments, which are based on the presence of a tfvars file in the root of the stack in question. This allows for some differences between environments, whilst encouraging consistency.
+
+*i.e. if a stack has a file named "dev.tfvars", but no file called "prod.tfvars", it will run when an environment is not specified, or when "dev" is passed as the environment, but definitely not in "prod"*
+
+The relevant tfvars file will be included in plans / applies to that environment.
+
+It also has a collated HTML output format for plans, currently a little rudimentary, but readable nonetheless. This allows you to view all the changes across all your stacks in a single file. 
 
 ### Commands
 - list - Lists eligible Terraform stacks
