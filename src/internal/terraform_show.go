@@ -39,10 +39,3 @@ func GetShowOutput(config Config, stack TerraformStack) (ShowOutput, error) {
 type ShowOutput struct {
 	Plan tfjson.Plan
 }
-
-type ShowOutputSet []ShowOutput
-
-func (sos *ShowOutputSet) GenerateHTMLReport() []byte {
-	// TODO: Implement this func
-	return []byte("")
-}
