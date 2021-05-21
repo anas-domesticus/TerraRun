@@ -32,14 +32,29 @@ It also has a collated HTML output format for plans, currently a little rudiment
 
 `terrarun apply -e dev` - Applies plans already created in all Terraform stacks, searching from current directory, will fail if plans do not exist, will use dev.tfvars files
 
-## Building from source:
+## Building from source (requires docker):
 
-- Navigate to src/cli
-- `go build -o terrarun`
+- `make build`
 
-This will create a binary called terrarun, put it whereever you like.
+This will output a binary called terrarun, put it whereever you like.
 
-Alternatively, the provided Dockerfile runs the test suite, then builds a clean docker image with the latest version of Terraform built in
+You also have the `build-mac` & `build-mac-arm` targets available to you for those architectures.
+
+Alternatively, the provided Dockerfile builds a clean docker image with the latest version of Terraform built in & terrarun
+
+## Licence
+
+This software is distributed under the MIT licence
+
+## Contributions
+
+Contributions are welcome! Please feel free to raise a PR. Any code contributions should pass tests & linting.
+
+This can be done locally by running the following:
+```
+   make test
+   make lint
+```
 
 ## Future stuff:
 - Running tasks in parallel

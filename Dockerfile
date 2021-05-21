@@ -7,8 +7,10 @@ COPY --from=terraform /bin/echo /usr/bin/echo
 RUN mkdir /src
 COPY ./src /src
 WORKDIR /src
-ENV GOOS=linux
-ENV GOARCH=amd64
+ARG GOOS=linux
+ARG GOARCH=amd64
+ENV GOOS=$GOOS
+ENV GOARCH=$GOARCH
 ENV CGO_ENABLED=0
 
 RUN go install honnef.co/go/tools/cmd/staticcheck@latest
