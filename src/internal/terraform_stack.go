@@ -50,7 +50,10 @@ func FindAllStacks(path string) ([]TerraformStack, error) {
 	var stacks []TerraformStack
 
 	err := filepath.Walk(path,
-		func(path string, info os.FileInfo, err error) error {
+		func(path string, info os.FileInfo, iErr error) error {
+			if iErr != nil {
+				return iErr
+			}
 			file, err := os.Open(path)
 			if err != nil {
 				return err
