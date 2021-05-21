@@ -1,9 +1,9 @@
 test:
-	docker build -t terrarun-builder --target tester .
+	docker build -t terrarun-tester --target tester .
 	docker run terrarun-builder go test ./...
 
 lint:
-	docker build -t terrarun-builder --target tester .
+	docker build -t terrarun-tester --target tester .
 	docker run terrarun-builder staticcheck ./...
 
 build:
