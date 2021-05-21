@@ -1,17 +1,22 @@
 FROM hashicorp/terraform:latest as terraform
-FROM golang:1.16 as builder
+FROM golang:1.16 as tester
 
 COPY --from=terraform /bin/terraform /bin/terraform
 # Need /bin/echo for tests
 COPY --from=terraform /bin/echo /usr/bin/echo
 RUN mkdir /src
 COPY ./src /src
+WORKDIR /src
+ENV GOOS=linux
+ENV GOARCH=amd64
+ENV CGO_ENABLED=0
 
-RUN cd /src/ && go test ./...
+RUN go install honnef.co/go/tools/cmd/staticcheck@latest
 
-RUN cd /src/cli && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o /src/terrarun
+FROM tester as builder
+RUN go build -o /src/terrarun cli/main.go
 
-FROM alpine:3.13
+FROM alpine:3.13 as final
 COPY --from=terraform /bin/terraform /usr/local/bin/terraform
 COPY --from=builder  /src/terrarun /usr/local/bin/terrarun
 RUN chmod a+x /usr/local/bin/terrarun
