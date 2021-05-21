@@ -18,7 +18,7 @@ It also has a collated HTML output format for plans, currently a little rudiment
 - list - Lists eligible Terraform stacks
 - validate - Performs a terraform validate against each of the stacks
 - plan - Runs a plan against each of these stacks, saves a tfplan file in the stack directories
-- apply - Runs the plan saved from teh previous step
+- apply - Runs the plan saved from the previous step
 - Help - Prints out a listing of available commands & flags
 
 ### Flags
