@@ -13,9 +13,7 @@ func (p *SimpleParameter) GetValue() string {
 	return p.Value
 }
 
-func (p *SimpleParameter) AddPlaceholders(ph []Placeholder) {
-	return
-}
+func (p *SimpleParameter) AddPlaceholders(ph []Placeholder) {}
 
 type ParameterWithPlaceholders struct {
 	Value        string
@@ -31,5 +29,4 @@ func (pwp *ParameterWithPlaceholders) GetValue() string {
 }
 func (pwp *ParameterWithPlaceholders) AddPlaceholders(ph []Placeholder) {
 	pwp.Placeholders = append(pwp.Placeholders, ph...)
-	return
 }

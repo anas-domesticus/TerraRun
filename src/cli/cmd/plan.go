@@ -56,7 +56,7 @@ func CheckAllPlanOutputs(config internal.Config) error {
 		}
 	}
 	if errOccurred {
-		return errors.New("one or more stacks failed to plan\n")
+		return errors.New("one or more stacks failed to plan")
 	}
 
 	// Report generation

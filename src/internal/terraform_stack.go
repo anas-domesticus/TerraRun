@@ -52,10 +52,10 @@ func FindAllStacks(path string) ([]TerraformStack, error) {
 	err := filepath.Walk(path,
 		func(path string, info os.FileInfo, err error) error {
 			file, err := os.Open(path)
-			defer file.Close()
 			if err != nil {
 				return err
 			}
+			defer file.Close()
 			fileInfo, err := file.Stat()
 			if err != nil {
 				return err

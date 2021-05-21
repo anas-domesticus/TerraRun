@@ -50,7 +50,7 @@ func CheckAllApplyOutputs(config internal.Config) error {
 		}
 	}
 	if errOccurred {
-		return errors.New("one or more stacks failed to apply\n")
+		return errors.New("one or more stacks failed to apply")
 	}
 	return nil
 }

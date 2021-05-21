@@ -110,7 +110,7 @@ func mergeAfterMap(known, unknown interface{}) map[string]interface{} {
 		switch k := known.(type) {
 		case map[string]interface{}:
 			toReturn = k
-			for i, _ := range uk {
+			for i := range uk {
 				toReturn[i] = "{{unknown}}"
 			}
 		default:
