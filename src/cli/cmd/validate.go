@@ -3,9 +3,9 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"github.com/anas-domesticus/TerraRun/src/internal"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"gitlab.com/lewisedginton/aws_common/terraform_wrapper/src/internal"
 	"os"
 )
 

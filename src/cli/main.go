@@ -1,7 +1,7 @@
 package main
 
 import (
-	cmd "gitlab.com/lewisedginton/aws_common/terraform_wrapper/src/cli/cmd"
+	"github.com/anas-domesticus/TerraRun/src/cli/cmd"
 )
 
 func main() {

@@ -1,4 +1,4 @@
-module gitlab.com/lewisedginton/aws_common/terraform_wrapper/src
+module github.com/anas-domesticus/TerraRun/src
 
 go 1.16
 
