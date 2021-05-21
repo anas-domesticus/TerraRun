@@ -4,9 +4,15 @@ WARNING: This software is currently very young & immature, potentially unsafe to
 
 This is a wrapper to Terraform, it allows you to run multiple Terraform stacks in a single command.
 
-It is designed to make Terraform easier to use in automation. Unlike another well-known Terraform wrapper (TerraGrunt), it requires no non-standard HCL & doesn't incite users to box everything into highly parameterised modules.
+It is designed to make Terraform easier to use in automation.
 
-It understands the concept of environments, which are based on the presence of a tfvars file in the root of the stack in question. This allows for some differences between environments, whilst encouraging consistency.
+Unlike another well-known Terraform wrapper, it requires no non-standard HCL & doesn't incite users to box everything into highly parameterised modules.
+
+Essentially, terrarun searches for directories containing .tf files & performs actions against them.
+
+It understands the concept of environments, which are based on the presence of a tfvars file of the environment name in the root of the stack in question.
+
+This allows for some differences between environments, whilst encouraging consistency.
 
 *i.e. if a stack has a file named "dev.tfvars", but no file called "prod.tfvars", it will run when an environment is not specified, or when "dev" is passed as the environment, but definitely not in "prod"*
 
@@ -16,10 +22,10 @@ It also has a collated HTML output format for plans, currently a little rudiment
 
 ### Commands
 - list - Lists eligible Terraform stacks
-- validate - Performs a terraform validate against each of the stacks
+- validate - Performs `terraform validate` against each of the stacks
 - plan - Runs a plan against each of these stacks, saves a tfplan file in the stack directories
 - apply - Runs the plan saved from the previous step
-- Help - Prints out a listing of available commands & flags
+- help - Prints out a listing of available commands & flags
 
 ### Flags
 - -d / --directory - Specifies the directory to base the search for Terraform stacks
