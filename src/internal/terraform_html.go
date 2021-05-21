@@ -103,6 +103,7 @@ func (sos *ShowOutputSet) buildTableData() []HTMLTableData {
 	return outSlice
 }
 
+// This builds a map[string]interface{} with "{{unknown}}" as the value for the elements missing from After
 func mergeAfterMap(known, unknown interface{}) map[string]interface{} {
 	var toReturn = make(map[string]interface{})
 	switch uk := unknown.(type) {
