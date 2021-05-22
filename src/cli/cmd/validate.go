@@ -22,6 +22,7 @@ var validateCmd = &cobra.Command{
 			internal.Config{
 				BaseDir: directory,
 				Env:     internal.Environment{Name: environment},
+				Debug:   debugLogging,
 			})
 		if err != nil {
 			fmt.Printf("Error: %s", err.Error())

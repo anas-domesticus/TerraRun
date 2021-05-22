@@ -2,7 +2,9 @@ package internal
 
 import (
 	"bytes"
+	"fmt"
 	"os/exec"
+	"strings"
 )
 
 type Command struct {
@@ -38,6 +40,9 @@ func (c *Command) Execute(cfg Config, stack TerraformStack) (ExecuteOutput, erro
 	cmd.Stderr = &stdErr
 	cmd.Dir = stack.Path
 	cmd.Env = c.EnvVars
+	if cfg.Debug {
+		fmt.Println(fmt.Sprintf("%s: %s %s", stack.Path, c.Binary, strings.Join(params, " ")))
+	}
 	err := cmd.Run()
 
 	switch err.(type) {

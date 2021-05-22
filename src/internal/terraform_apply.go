@@ -30,7 +30,9 @@ func ApplyStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
 			Error:   fmt.Errorf("plan file missing for: %s", stack.Path),
 		}, nil
 	}
-	fmt.Printf("Applying %s...\n", stack.Path)
+	if config.Debug {
+		fmt.Printf("Applying %s...\n", stack.Path)
+	}
 	output, err := InitStack(config, stack)
 	if err != nil {
 		// TODO: Add detail to error

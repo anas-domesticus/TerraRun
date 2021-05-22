@@ -33,7 +33,9 @@ func ValidateWasSuccessful(output ExecuteOutput) bool {
 }
 
 func ValidateStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
-	fmt.Printf("Validating %s...\n", stack.Path)
+	if config.Debug {
+		fmt.Printf("Validating %s...\n", stack.Path)
+	}
 	output, err := InitStack(config, stack)
 	if err != nil {
 		// TODO: Add detail to error

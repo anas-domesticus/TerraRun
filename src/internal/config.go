@@ -4,4 +4,5 @@ type Config struct {
 	Env              Environment
 	BaseDir          string
 	TFPluginCacheDir string
+	Debug            bool
 }

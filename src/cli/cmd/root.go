@@ -22,4 +22,5 @@ func Execute() {
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&environment, "environment", "e", "", "name of current environment")
 	rootCmd.PersistentFlags().StringVarP(&directory, "directory", "d", "./", "directory within which to look for stacks")
+	rootCmd.PersistentFlags().BoolVar(&debugLogging, "debug", false, "whether to output debug logging")
 }
