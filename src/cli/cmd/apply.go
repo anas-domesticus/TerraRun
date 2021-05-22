@@ -42,6 +42,9 @@ func CheckAllApplyOutputs(config internal.Config) error {
 	for _, out := range outputs {
 		if internal.ApplyWasSuccessful(out) {
 			color.Green("Apply OK for %s\n", out.Stack.Path)
+			if config.Debug {
+				color.Green(string(out.StdOut))
+			}
 		} else {
 			color.Red("Apply failed for %s\n", out.Stack.Path)
 			color.Red(string(out.StdOut))

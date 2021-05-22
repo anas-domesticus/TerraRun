@@ -43,6 +43,9 @@ func CheckAllValidateOutputs(config internal.Config) error {
 	for _, out := range outputs {
 		if internal.ValidateWasSuccessful(out) {
 			color.Green("Validation passed for %s\n", out.Stack.Path)
+			if config.Debug {
+				color.Green(string(out.StdOut))
+			}
 		} else {
 			color.Red("Validation failed for %s\n", out.Stack.Path)
 			color.Red(string(out.StdOut))

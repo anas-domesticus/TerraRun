@@ -47,6 +47,9 @@ func CheckAllPlanOutputs(config internal.Config) error {
 			color.Green("Plan OK for %s\n", out.Stack.Path)
 			if outputPlanReport {
 				stacksForReport = append(stacksForReport, out.Stack)
+				if config.Debug {
+					color.Green(string(out.StdOut))
+				}
 			}
 		} else {
 			color.Red("Plan failed for %s\n", out.Stack.Path)
