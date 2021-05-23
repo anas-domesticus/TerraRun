@@ -29,6 +29,7 @@ It also has a collated HTML output format for plans, currently a little rudiment
 
 ### Flags
 - -d / --directory - Specifies the directory to base the search for Terraform stacks
+- --debug - Outputs debug logs, including the full output of each terraform command
 - -e / --environment - Specifies an environment to run, if omitted it will ignore the concept of environments totally
 - -r / --report - Outputs an HTML report detailing the changes to each of the stacks, only possible when using the "plan" command
 *Be warned, the HTML is incredibly ugly, PRs are welcome to improve this :)*
@@ -63,6 +64,8 @@ This can be done locally by running the following:
 ```
 
 ## Future stuff:
+- Dynamic backend config
+- Warning detection for validation
 - Running tasks in parallel
 - YAML config for custom commands, linting etc...
 - Pre/post command hooks
