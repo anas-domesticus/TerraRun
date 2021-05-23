@@ -4,6 +4,8 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/json"
+	"fmt"
+	"github.com/sergi/go-diff/diffmatchpatch"
 	"html/template"
 	"strings"
 )
@@ -88,9 +90,9 @@ func (sos *ShowOutputSet) buildTableData() []HTMLTableData {
 				}
 			}
 			if string(before) != string(after) {
-				//dmp := diffmatchpatch.New()
-				//diffs := dmp.DiffMain(string(before), string(after), false)
-				//fmt.Println(dmp.DiffPrettyText(diffs))
+				dmp := diffmatchpatch.New()
+				diffs := dmp.DiffMain(string(before), string(after), false)
+				fmt.Println(dmp.DiffPrettyText(diffs))
 
 				changeDetails = append(changeDetails, ChangeDetail{
 					ResourceName:    change.Address,
@@ -98,7 +100,7 @@ func (sos *ShowOutputSet) buildTableData() []HTMLTableData {
 					WillBeDestroyed: strings.Trim(string(after), "") == "",
 					WillBeUpdated:   !(strings.Trim(string(before), "") == "" || strings.Trim(string(after), "") == ""),
 					Before:          string(before),
-					After:           string(after),
+					After:           FormatDiff(diffs),
 				})
 			}
 		}
@@ -135,4 +137,19 @@ func mergeAfterMap(known, unknown interface{}) map[string]interface{} {
 	}
 
 	return toReturn
+}
+
+func FormatDiff(diffs []diffmatchpatch.Diff) string {
+	var buff bytes.Buffer
+	for _, diff := range diffs {
+		switch diff.Type {
+		case diffmatchpatch.DiffInsert:
+			_, _ = buff.WriteString(fmt.Sprintf("+ %s", diff.Text))
+		case diffmatchpatch.DiffDelete:
+			_, _ = buff.WriteString(fmt.Sprintf("- %s", diff.Text))
+		case diffmatchpatch.DiffEqual:
+			_, _ = buff.WriteString(diff.Text)
+		}
+	}
+	return buff.String()
 }
