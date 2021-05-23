@@ -19,5 +19,8 @@ func GetTerraformInit(cacheDir string) Command {
 func InitStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
 	initCmd := GetTerraformInit(config.TFPluginCacheDir)
 	output, err := initCmd.Execute(config, stack)
+	if output.Error != nil {
+		return output, output.Error
+	}
 	return output, err
 }
