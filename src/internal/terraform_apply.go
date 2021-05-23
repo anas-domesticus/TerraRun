@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"os"
 )
 
 func GetTerraformApply() Command {
@@ -37,7 +36,7 @@ func ApplyStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
 		return output, err
 	}
 	applyCmd := GetTerraformApply()
-	applyCmd.EnvVars = append(os.Environ(), BuildTFStackEnvVars(stack)...)
+	applyCmd.EnvVars = append(applyCmd.EnvVars, BuildTFStackEnvVars(stack)...)
 	output, err = applyCmd.Execute(config, stack)
 	return output, err
 }
