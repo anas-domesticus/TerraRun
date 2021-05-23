@@ -25,9 +25,6 @@ func PlanWasSuccessful(output ExecuteOutput) bool {
 }
 
 func PlanStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
-	if config.Debug {
-		fmt.Printf("Planning %s...\n", stack.Path)
-	}
 	output, err := InitStack(config, stack)
 	if err != nil {
 		// TODO: Add detail to error
