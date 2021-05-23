@@ -12,6 +12,14 @@ type TerraformStack struct {
 	Path string
 }
 
+func (tfs *TerraformStack) GetAbsPath() string {
+	absPath, err := filepath.Abs(filepath.Join("./", tfs.Path))
+	if err != nil {
+		return ""
+	}
+	return absPath
+}
+
 func (tfs *TerraformStack) ShouldRunForEnv(env Environment) bool {
 	if env.Name == "" {
 		return true

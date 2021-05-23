@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
-	"path/filepath"
 	"strings"
 )
 
@@ -34,23 +33,18 @@ func (c *Command) Execute(cfg Config, stack TerraformStack) (ExecuteOutput, erro
 		params = append(params, v.GetValue())
 	}
 
-	absPath, err := filepath.Abs(stack.Path)
-	if err != nil {
-		return ExecuteOutput{}, err
-	}
-
 	// Building the command
 	cmd := exec.Command(c.Binary, params...)
 	var stdOut, stdErr bytes.Buffer
 	cmd.Stdout = &stdOut
 	cmd.Stderr = &stdErr
-	cmd.Dir = absPath
+	cmd.Dir = stack.GetAbsPath()
 
 	cmd.Env = c.EnvVars
 	if cfg.Debug {
-		fmt.Println(fmt.Sprintf("%s: %s %s", absPath, c.Binary, strings.Join(params, " ")))
+		fmt.Println(fmt.Sprintf("%s: %s %s", stack.GetAbsPath(), c.Binary, strings.Join(params, " ")))
 	}
-	err = cmd.Run()
+	err := cmd.Run()
 
 	switch err.(type) {
 	case *exec.ExitError, nil:
