@@ -40,6 +40,8 @@ func CheckAllValidateOutputs(config internal.Config) error {
 			color.Green("Validation passed for %s\n", out.Stack.Path)
 			if config.Debug {
 				color.Green(string(out.StdOut))
+			} else if internal.ValidateHasWarnings(out) {
+				color.Yellow(string(out.StdOut))
 			}
 		} else {
 			color.Red("Validation failed for %s\n", out.Stack.Path)

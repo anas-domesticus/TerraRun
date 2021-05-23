@@ -31,6 +31,15 @@ func ValidateWasSuccessful(output ExecuteOutput) bool {
 	return val.Valid
 }
 
+func ValidateHasWarnings(output ExecuteOutput) bool {
+	val := ValidateOutput{}
+	err := json.Unmarshal(output.StdOut, &val)
+	if err != nil {
+		return false
+	}
+	return val.WarningCount > 0
+}
+
 func ValidateStack(config Config, stack TerraformStack) (ExecuteOutput, error) {
 	output, err := InitStack(config, stack)
 	if err != nil || output.Error != nil {
