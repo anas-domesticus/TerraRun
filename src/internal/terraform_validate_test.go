@@ -84,6 +84,9 @@ func TestTFValidate(t *testing.T) {
 			} else {
 				assert.NoError(t, output.Error)
 			}
+			if !tc.WantErr && !tc.WantOutputErr {
+				AssertEnvVarsCorrect(t, output.Command.EnvVars, false)
+			}
 			_ = json.Unmarshal(output.StdOut, &valOutput)
 			assert.Equal(t, tc.Valid, valOutput.Valid)
 		})

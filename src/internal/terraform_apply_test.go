@@ -66,6 +66,7 @@ func TestTFApply(t *testing.T) {
 			if !tc.WantErr && !tc.WantOutputErr {
 				_, err := os.Stat(filepath.Join(tc.Path, "terraform.tfstate"))
 				assert.NoError(t, err)
+				AssertEnvVarsCorrect(t, output.Command.EnvVars, true)
 			}
 		})
 	}

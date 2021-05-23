@@ -65,6 +65,7 @@ func TestTFPlan(t *testing.T) {
 			if !tc.WantErr && !tc.WantOutputErr {
 				_, err := os.Stat(filepath.Join(tc.Path, "plan.tfplan"))
 				assert.NoError(t, err)
+				AssertEnvVarsCorrect(t, output.Command.EnvVars, true)
 			}
 		})
 	}
