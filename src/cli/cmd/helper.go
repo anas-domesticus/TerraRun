@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/anas-domesticus/TerraRun/src/internal"
 	"io/ioutil"
 	"os"
 )
@@ -13,4 +14,12 @@ func GetCacheDir() string {
 		os.Exit(1)
 	}
 	return dir
+}
+
+func BuildConfig() internal.Config {
+	return internal.Config{
+		BaseDir: directory,
+		Env:     internal.Environment{Name: environment},
+		Debug:   debugLogging,
+	}
 }

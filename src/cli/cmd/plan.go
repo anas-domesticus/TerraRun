@@ -20,11 +20,7 @@ var planCmd = &cobra.Command{
 	Short: "Performs a terraform plan against all the eligible stack directories",
 	Long:  `Performs a terraform plan against all the eligible stack directories`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := CheckAllPlanOutputs(
-			internal.Config{
-				BaseDir: directory,
-				Env:     internal.Environment{Name: environment},
-			})
+		err := CheckAllPlanOutputs(BuildConfig())
 		if err != nil {
 			fmt.Printf("Error: %s", err.Error())
 			os.Exit(1)

@@ -18,11 +18,7 @@ var applyCmd = &cobra.Command{
 	Short: "Performs a terraform apply against all the eligible stack directories",
 	Long:  `Performs a terraform apply against all the eligible stack directories`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := CheckAllApplyOutputs(
-			internal.Config{
-				BaseDir: directory,
-				Env:     internal.Environment{Name: environment},
-			})
+		err := CheckAllApplyOutputs(BuildConfig())
 		if err != nil {
 			fmt.Printf("Error: %s", err.Error())
 			os.Exit(1)

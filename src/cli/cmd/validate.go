@@ -18,12 +18,7 @@ var validateCmd = &cobra.Command{
 	Short: "Performs a terraform validate against all the eligible stack directories",
 	Long:  `Performs a terraform validate against all the eligible stack directories`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := CheckAllValidateOutputs(
-			internal.Config{
-				BaseDir: directory,
-				Env:     internal.Environment{Name: environment},
-				Debug:   debugLogging,
-			})
+		err := CheckAllValidateOutputs(BuildConfig())
 		if err != nil {
 			fmt.Printf("Error: %s", err.Error())
 			os.Exit(1)
