@@ -4,7 +4,10 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/json"
+	"fmt"
+	"github.com/sergi/go-diff/diffmatchpatch"
 	"html/template"
+	"strings"
 )
 
 //go:embed templates/report.tpl.html
@@ -38,9 +41,12 @@ type HTMLTableData struct {
 }
 
 type ChangeDetail struct {
-	ResourceName string
-	Before       string
-	After        string
+	ResourceName    string
+	WillBeCreated   bool
+	WillBeDestroyed bool
+	WillBeUpdated   bool
+	Before          string
+	After           string
 }
 
 func (sos *ShowOutputSet) buildTableData() []HTMLTableData {
@@ -83,12 +89,20 @@ func (sos *ShowOutputSet) buildTableData() []HTMLTableData {
 					return nil
 				}
 			}
+			if string(before) != string(after) {
+				dmp := diffmatchpatch.New()
+				diffs := dmp.DiffMain(string(before), string(after), false)
+				fmt.Println(dmp.DiffPrettyText(diffs))
 
-			changeDetails = append(changeDetails, ChangeDetail{
-				ResourceName: change.Address,
-				Before:       string(before),
-				After:        string(after),
-			})
+				changeDetails = append(changeDetails, ChangeDetail{
+					ResourceName:    change.Address,
+					WillBeCreated:   strings.Trim(string(before), "") == "",
+					WillBeDestroyed: strings.Trim(string(after), "") == "",
+					WillBeUpdated:   !(strings.Trim(string(before), "") == "" || strings.Trim(string(after), "") == ""),
+					Before:          string(before),
+					After:           FormatDiff(diffs),
+				})
+			}
 		}
 		outSlice = append(outSlice, HTMLTableData{
 			StackName:     v.Stack.Path,
@@ -99,6 +113,7 @@ func (sos *ShowOutputSet) buildTableData() []HTMLTableData {
 			Destroy:       destroyCount,
 			ChangeDetails: changeDetails,
 		})
+
 	}
 	return outSlice
 }
@@ -122,4 +137,19 @@ func mergeAfterMap(known, unknown interface{}) map[string]interface{} {
 	}
 
 	return toReturn
+}
+
+func FormatDiff(diffs []diffmatchpatch.Diff) string {
+	var buff bytes.Buffer
+	for _, diff := range diffs {
+		switch diff.Type {
+		case diffmatchpatch.DiffInsert:
+			_, _ = buff.WriteString(fmt.Sprintf("+ %s", diff.Text))
+		case diffmatchpatch.DiffDelete:
+			_, _ = buff.WriteString(fmt.Sprintf("- %s", diff.Text))
+		case diffmatchpatch.DiffEqual:
+			_, _ = buff.WriteString(diff.Text)
+		}
+	}
+	return buff.String()
 }
