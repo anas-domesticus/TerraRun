@@ -34,12 +34,17 @@ It also has a collated HTML output format for plans, currently a little rudiment
 - -r / --report - Outputs an HTML report detailing the changes to each of the stacks, only possible when using the "plan" command
 *Be warned, the HTML is incredibly ugly, PRs are welcome to improve this :)*
 
-## Examples:
+### Examples:
 `terrarun plan -d ./terraform-files -r` - Plans all stacks under ./terraform-files, outputs a report to report.html
 
 `terrarun apply -e dev` - Applies plans already created in all Terraform stacks, searching from current directory, will fail if plans do not exist, will use dev.tfvars files
 
-## Building from source (requires docker):
+### Input Variables
+
+For Plan/Apply steps, the following environment variables are passed through to terraform
+- TF_VAR_terrarun_stack_name: The basename of the directory the stack is inside
+
+### Building from source (requires docker):
 
 - `make build`
 
@@ -49,11 +54,11 @@ You also have the `build-mac` & `build-mac-arm` targets available to you for tho
 
 Alternatively, the provided Dockerfile builds a clean docker image with the latest version of Terraform built in & terrarun
 
-## Licence
+### Licence
 
 This software is distributed under the MIT licence
 
-## Contributions
+### Contributions
 
 Contributions are welcome! Please feel free to raise a PR. Any code contributions should pass tests & linting.
 
@@ -63,9 +68,8 @@ This can be done locally by running the following:
    make lint
 ```
 
-## Future stuff:
+### Future stuff:
 - Dynamic backend config
-- Warning detection for validation
 - Running tasks in parallel
 - YAML config for custom commands, linting etc...
 - Pre/post command hooks
