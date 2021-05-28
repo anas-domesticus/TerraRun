@@ -42,7 +42,7 @@ func (c *Command) Execute(cfg Config, stack TerraformStack) (ExecuteOutput, erro
 
 	cmd.Env = c.EnvVars
 	if cfg.Debug {
-		fmt.Println(fmt.Sprintf("%s: %s %s", stack.GetAbsPath(), c.Binary, strings.Join(params, " ")))
+		_ = fmt.Sprintf("%s: %s %s\n", stack.GetAbsPath(), c.Binary, strings.Join(params, " "))
 	}
 	err := cmd.Run()
 

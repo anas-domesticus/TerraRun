@@ -29,7 +29,7 @@ func (tfs *TerraformStack) ShouldRunForEnv(env Environment) bool {
 		return false
 	}
 	for _, f := range files {
-		if strings.ToLower(f.Name()) == fmt.Sprintf("%s.tfvars", strings.ToLower(env.Name)) {
+		if strings.ToLower(f.Name()) == fmt.Sprintf("env-%s.tfvars", strings.ToLower(env.Name)) {
 			return true
 		}
 	}
