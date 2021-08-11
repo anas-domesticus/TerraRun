@@ -62,6 +62,60 @@ func TestFindAllStacks(t *testing.T) {
 	}
 }
 
+func TestGetStackConfig(t *testing.T) {
+	tests := []struct {
+		Name    string
+		Path    string
+		WantErr bool
+		WantOut StackConfig
+	}{
+		{
+			"empty_string",
+			"",
+			true,
+			StackConfig{},
+		},
+		{
+			"not_a_directory",
+			"somewhere_made_up",
+			true,
+			StackConfig{},
+		},
+		{
+			"empty dir",
+			"testdata/empty",
+			false,
+			StackConfig{},
+		},
+		{
+			"no_config",
+			"testdata/non_tf_dir/valid_subdir",
+			false,
+			StackConfig{},
+		},
+		{
+			"valid_config",
+			"testdata/valid_stack",
+			false,
+			StackConfig{
+				Depends: []Dependency{
+					Dependency("testdata/non_tf_dir/valid_subdir"),
+				},
+			},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.Name, func(t *testing.T) {
+			stack := TerraformStack{Path: tc.Path}
+			result, err := stack.GetStackConfig()
+			if tc.WantErr {
+				assert.Error(t, err)
+			}
+			assert.Equal(t, tc.WantOut, result)
+		})
+	}
+}
+
 func TestIsTerraformStack(t *testing.T) {
 	assert.False(t, IsTerraformStack("testdata/non_tf_dir"))
 	assert.True(t, IsTerraformStack("testdata/valid_stack"))

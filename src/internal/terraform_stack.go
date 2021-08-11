@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -52,6 +53,23 @@ func (tfs *TerraformStack) GetStackPlaceholders() []Placeholder {
 		Before: "StackRelPath",
 		After:  RelPath,
 	}}
+}
+
+func (tfs *TerraformStack) GetStackConfig() (StackConfig, error) {
+	fullPath := filepath.Join(tfs.Path, "terrarun.yaml")
+	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
+		return StackConfig{}, err
+	}
+	data, err := os.ReadFile(fullPath)
+	if err != nil {
+		return StackConfig{}, err
+	}
+	stackConfig := StackConfig{}
+	err = yaml.Unmarshal(data, &stackConfig)
+	if err != nil {
+		return StackConfig{}, err
+	}
+	return stackConfig, nil
 }
 
 func FindAllStacks(path string) ([]TerraformStack, error) {
