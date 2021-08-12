@@ -10,7 +10,7 @@ func TestFindAllStacks(t *testing.T) {
 		Name    string
 		Input   string
 		WantErr bool
-		WantOut []*TerraformStack
+		WantOut []TerraformStack
 	}{
 		{
 			"empty_string",
@@ -34,7 +34,7 @@ func TestFindAllStacks(t *testing.T) {
 			"single_dir",
 			"testdata/non_tf_dir/valid_subdir",
 			false,
-			[]*TerraformStack{{
+			[]TerraformStack{{
 				"testdata/non_tf_dir/valid_subdir",
 				StackConfig{},
 			}},
@@ -43,7 +43,7 @@ func TestFindAllStacks(t *testing.T) {
 			"multiple_dirs",
 			"testdata",
 			false,
-			[]*TerraformStack{{
+			[]TerraformStack{{
 				"testdata/invalid_stack",
 				StackConfig{},
 			}, {
@@ -136,7 +136,7 @@ func TestShouldRunForEnv(t *testing.T) {
 }
 
 func TestForAllStacks(t *testing.T) {
-	testFunc := func(cfg Config, stack *TerraformStack) (ExecuteOutput, error) {
+	testFunc := func(cfg Config, stack TerraformStack) (ExecuteOutput, error) {
 		return ExecuteOutput{}, nil
 	}
 	tests := []struct {

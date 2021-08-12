@@ -27,8 +27,11 @@ func NewTerraformStack(path string) (TerraformStack, error) {
 
 func getStackConfig(path string) (StackConfig, error) {
 	fullPath := filepath.Join(path, "terrarun.yaml")
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return StackConfig{}, err // Directory doesn't exist, return error
+	}
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
-		return StackConfig{}, err
+		return StackConfig{}, nil // File doesn't exist, so provide empty config & throw away error
 	}
 	data, err := os.ReadFile(fullPath)
 	if err != nil {
@@ -84,8 +87,8 @@ func (tfs *TerraformStack) GetStackPlaceholders() []Placeholder {
 	}}
 }
 
-func FindAllStacks(path string) ([]*TerraformStack, error) {
-	var stacks []*TerraformStack
+func FindAllStacks(path string) ([]TerraformStack, error) {
+	var stacks []TerraformStack
 
 	err := filepath.Walk(path,
 		func(path string, info os.FileInfo, iErr error) error {
@@ -106,7 +109,7 @@ func FindAllStacks(path string) ([]*TerraformStack, error) {
 				if err != nil {
 					return err
 				}
-				stacks = append(stacks, &stack)
+				stacks = append(stacks, stack)
 			}
 			return nil
 		})
@@ -126,7 +129,7 @@ func IsTerraformStack(path string) bool {
 	return false
 }
 
-func ForAllStacks(cfg Config, fn func(Config, *TerraformStack) (ExecuteOutput, error)) ([]ExecuteOutput, error) {
+func ForAllStacks(cfg Config, fn func(Config, TerraformStack) (ExecuteOutput, error)) ([]ExecuteOutput, error) {
 	stacks, err := FindAllStacks(cfg.BaseDir)
 	if err != nil {
 		return nil, err
