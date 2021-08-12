@@ -10,7 +10,7 @@ func TestFindAllStacks(t *testing.T) {
 		Name    string
 		Input   string
 		WantErr bool
-		WantOut []TerraformStack
+		WantOut []*TerraformStack
 	}{
 		{
 			"empty_string",
@@ -34,20 +34,28 @@ func TestFindAllStacks(t *testing.T) {
 			"single_dir",
 			"testdata/non_tf_dir/valid_subdir",
 			false,
-			[]TerraformStack{{
+			[]*TerraformStack{{
 				"testdata/non_tf_dir/valid_subdir",
+				StackConfig{},
 			}},
 		},
 		{
 			"multiple_dirs",
 			"testdata",
 			false,
-			[]TerraformStack{{
+			[]*TerraformStack{{
 				"testdata/invalid_stack",
+				StackConfig{},
 			}, {
 				"testdata/non_tf_dir/valid_subdir",
+				StackConfig{},
 			}, {
 				"testdata/valid_stack",
+				StackConfig{
+					Depends: []Dependency{
+						Dependency("testdata/non_tf_dir/valid_subdir"),
+					},
+				},
 			}},
 		},
 	}
@@ -106,8 +114,7 @@ func TestGetStackConfig(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.Name, func(t *testing.T) {
-			stack := TerraformStack{Path: tc.Path}
-			result, err := stack.GetStackConfig()
+			result, err := getStackConfig(tc.Path)
 			if tc.WantErr {
 				assert.Error(t, err)
 			}
@@ -129,7 +136,7 @@ func TestShouldRunForEnv(t *testing.T) {
 }
 
 func TestForAllStacks(t *testing.T) {
-	testFunc := func(cfg Config, stack TerraformStack) (ExecuteOutput, error) {
+	testFunc := func(cfg Config, stack *TerraformStack) (ExecuteOutput, error) {
 		return ExecuteOutput{}, nil
 	}
 	tests := []struct {

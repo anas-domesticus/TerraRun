@@ -10,7 +10,36 @@ import (
 )
 
 type TerraformStack struct {
-	Path string
+	Path   string
+	config StackConfig
+}
+
+func NewTerraformStack(path string) (TerraformStack, error) {
+	config, err := getStackConfig(path)
+	if err != nil {
+		return TerraformStack{}, err
+	}
+	return TerraformStack{
+		Path:   path,
+		config: config,
+	}, nil
+}
+
+func getStackConfig(path string) (StackConfig, error) {
+	fullPath := filepath.Join(path, "terrarun.yaml")
+	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
+		return StackConfig{}, err
+	}
+	data, err := os.ReadFile(fullPath)
+	if err != nil {
+		return StackConfig{}, err
+	}
+	stackConfig := StackConfig{}
+	err = yaml.Unmarshal(data, &stackConfig)
+	if err != nil {
+		return StackConfig{}, err
+	}
+	return stackConfig, nil
 }
 
 func (tfs *TerraformStack) GetAbsPath() string {
@@ -55,25 +84,8 @@ func (tfs *TerraformStack) GetStackPlaceholders() []Placeholder {
 	}}
 }
 
-func (tfs *TerraformStack) GetStackConfig() (StackConfig, error) {
-	fullPath := filepath.Join(tfs.Path, "terrarun.yaml")
-	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
-		return StackConfig{}, err
-	}
-	data, err := os.ReadFile(fullPath)
-	if err != nil {
-		return StackConfig{}, err
-	}
-	stackConfig := StackConfig{}
-	err = yaml.Unmarshal(data, &stackConfig)
-	if err != nil {
-		return StackConfig{}, err
-	}
-	return stackConfig, nil
-}
-
-func FindAllStacks(path string) ([]TerraformStack, error) {
-	var stacks []TerraformStack
+func FindAllStacks(path string) ([]*TerraformStack, error) {
+	var stacks []*TerraformStack
 
 	err := filepath.Walk(path,
 		func(path string, info os.FileInfo, iErr error) error {
@@ -90,7 +102,11 @@ func FindAllStacks(path string) ([]TerraformStack, error) {
 				return err
 			}
 			if fileInfo.IsDir() && IsTerraformStack(file.Name()) {
-				stacks = append(stacks, TerraformStack{Path: file.Name()})
+				stack, err := NewTerraformStack(file.Name())
+				if err != nil {
+					return err
+				}
+				stacks = append(stacks, &stack)
 			}
 			return nil
 		})
@@ -110,7 +126,7 @@ func IsTerraformStack(path string) bool {
 	return false
 }
 
-func ForAllStacks(cfg Config, fn func(Config, TerraformStack) (ExecuteOutput, error)) ([]ExecuteOutput, error) {
+func ForAllStacks(cfg Config, fn func(Config, *TerraformStack) (ExecuteOutput, error)) ([]ExecuteOutput, error) {
 	stacks, err := FindAllStacks(cfg.BaseDir)
 	if err != nil {
 		return nil, err
