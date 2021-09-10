@@ -10,31 +10,31 @@ func TestFindAllStacks(t *testing.T) {
 		Name    string
 		Input   string
 		WantErr bool
-		WantOut []TerraformStack
+		WantOut map[int]TerraformStack
 	}{
 		{
 			"empty_string",
 			"",
 			true,
-			nil,
+			map[int]TerraformStack{},
 		},
 		{
 			"not_a_directory",
 			"somewhere_made_up",
 			true,
-			nil,
+			map[int]TerraformStack{},
 		},
 		{
 			"empty dir",
 			"testdata/empty",
 			false,
-			nil,
+			map[int]TerraformStack{},
 		},
 		{
 			"single_dir",
 			"testdata/non_tf_dir/valid_subdir",
 			false,
-			[]TerraformStack{{
+			map[int]TerraformStack{0: {
 				"testdata/non_tf_dir/valid_subdir",
 				StackConfig{},
 			}},
@@ -43,13 +43,13 @@ func TestFindAllStacks(t *testing.T) {
 			"multiple_dirs",
 			"testdata",
 			false,
-			[]TerraformStack{{
+			map[int]TerraformStack{0: {
 				"testdata/invalid_stack",
 				StackConfig{},
-			}, {
+			}, 1: {
 				"testdata/non_tf_dir/valid_subdir",
 				StackConfig{},
-			}, {
+			}, 2: {
 				"testdata/valid_stack",
 				StackConfig{
 					Depends: []Dependency{
@@ -204,6 +204,58 @@ func TestForAllStacks(t *testing.T) {
 				assert.Error(t, err)
 			}
 			assert.Equal(t, tc.WantLen, len(output))
+		})
+	}
+}
+
+func TestPathToKey(t *testing.T) {
+	tests := []struct {
+		Name      string
+		InputMap  map[int]TerraformStack
+		InputPath Dependency
+		Expected  int
+	}{
+		{
+			"empty",
+			map[int]TerraformStack{},
+			Dependency("path"),
+			-1,
+		},
+		{
+			"path_not_present",
+			map[int]TerraformStack{0: {
+				"testdata/invalid_stack",
+				StackConfig{},
+			}, 1: {
+				"testdata/non_tf_dir/valid_subdir",
+				StackConfig{},
+			}, 2: {
+				"testdata/valid_stack",
+				StackConfig{},
+			}},
+			Dependency("path"),
+			-1,
+		},
+		{
+			"path_not_present",
+			map[int]TerraformStack{0: {
+				"testdata/invalid_stack",
+				StackConfig{},
+			}, 1: {
+				"testdata/non_tf_dir/valid_subdir",
+				StackConfig{},
+			}, 2: {
+				"testdata/valid_stack",
+				StackConfig{},
+			}},
+			Dependency("testdata/valid_stack"),
+			2,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.Name, func(t *testing.T) {
+			key := pathToKey(tc.InputMap, tc.InputPath)
+			assert.Equal(t, tc.Expected, key)
 		})
 	}
 }

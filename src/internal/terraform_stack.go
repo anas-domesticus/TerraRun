@@ -87,9 +87,10 @@ func (tfs *TerraformStack) GetStackPlaceholders() []Placeholder {
 	}}
 }
 
-func FindAllStacks(path string) ([]TerraformStack, error) {
-	var stacks []TerraformStack
+func FindAllStacks(path string) (map[int]TerraformStack, error) {
+	stacks := make(map[int]TerraformStack)
 
+	count := 0
 	err := filepath.Walk(path,
 		func(path string, info os.FileInfo, iErr error) error {
 			if iErr != nil {
@@ -109,11 +110,47 @@ func FindAllStacks(path string) ([]TerraformStack, error) {
 				if err != nil {
 					return err
 				}
-				stacks = append(stacks, stack)
+				stacks[count] = stack
+				count = count + 1
 			}
 			return nil
 		})
+
+	// Here we should check dependencies
+
 	return stacks, err
+}
+
+func dependencyInSlice(stacks map[int]TerraformStack, path Dependency) bool {
+	for _, stack := range stacks {
+		if stack.Path == string(path) {
+			return true
+		}
+	}
+	return false
+}
+
+func pathToKey(stacks map[int]TerraformStack, path Dependency) int {
+	for i, stack := range stacks {
+		if stack.Path == string(path) {
+			return i
+		}
+	}
+	return -1
+}
+
+func CheckDependencies(stacks map[int]TerraformStack) error {
+	for i := range stacks {
+		// Loop through each of the dependency paths
+		for _, v := range stacks[i].config.Depends {
+			// Checking for the presence of the path in the stacks slice
+			if !dependencyInSlice(stacks, v) {
+				// It's not there!!
+			}
+			// Need to check for dep loops here
+		}
+	}
+	return nil
 }
 
 func IsTerraformStack(path string) bool {
