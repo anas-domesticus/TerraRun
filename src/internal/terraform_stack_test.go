@@ -390,3 +390,67 @@ func TestResolveDependencies(t *testing.T) {
 		})
 	}
 }
+
+func TestCheckDependencies(t *testing.T) {
+	tests := []struct {
+		Name      string
+		InputMap  map[int]TerraformStack
+		Expected  []int
+		WantError bool
+	}{
+		{
+			"completely_empty",
+			map[int]TerraformStack{},
+			[]int{},
+			false,
+		},
+		{
+			"dependency_loop",
+			map[int]TerraformStack{0: {
+				"testdata/invalid_stack",
+				StackConfig{},
+			}, 1: {
+				"testdata/non_tf_dir/valid_subdir",
+				StackConfig{
+					Depends: []Dependency{
+						Dependency("testdata/valid_stack"),
+					},
+				},
+			}, 2: {
+				"testdata/valid_stack",
+				StackConfig{
+					Depends: []Dependency{
+						Dependency("testdata/non_tf_dir/valid_subdir"),
+					},
+				},
+			}},
+			[]int{},
+			true,
+		},
+		{
+			"dependency_missing",
+			map[int]TerraformStack{0: {
+				"testdata/invalid_stack",
+				StackConfig{},
+			}, 1: {
+				"testdata/non_tf_dir/valid_subdir",
+				StackConfig{},
+			}, 2: {
+				"testdata/valid_stack",
+				StackConfig{
+					Depends: []Dependency{
+						Dependency("not_a_path"),
+					},
+				},
+			}},
+			[]int{},
+			true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.Name, func(t *testing.T) {
+			err := checkDependencies(tc.InputMap)
+			assert.Equal(t, err != nil, tc.WantError)
+		})
+	}
+}

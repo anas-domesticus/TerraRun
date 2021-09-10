@@ -116,10 +116,14 @@ func FindAllStacks(path string) (map[int]TerraformStack, error) {
 			}
 			return nil
 		})
-
-	// Here we should check dependencies
-
-	return stacks, err
+	if err != nil {
+		return nil, err
+	}
+	err = checkDependencies(stacks)
+	if err != nil {
+		return nil, err
+	}
+	return stacks, nil
 }
 
 func dependencyInSlice(stacks map[int]TerraformStack, path Dependency) bool {
@@ -174,15 +178,18 @@ func contains(slice []int, check int) bool {
 	return false
 }
 
-func CheckDependencies(stacks map[int]TerraformStack) error {
+func checkDependencies(stacks map[int]TerraformStack) error {
 	for i := range stacks {
 		// Loop through each of the dependency paths
 		for _, v := range stacks[i].config.Depends {
 			// Checking for the presence of the path in the stacks slice
 			if !dependencyInSlice(stacks, v) {
-				// It's not there!!
+				return errors.New("missing dependency")
 			}
-			// Need to check for dep loops here
+		}
+		_, err := resolveDependencies(stacks, i, nil)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
