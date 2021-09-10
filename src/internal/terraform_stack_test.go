@@ -259,3 +259,134 @@ func TestPathToKey(t *testing.T) {
 		})
 	}
 }
+
+func TestResolveDependencies(t *testing.T) {
+	tests := []struct {
+		Name      string
+		InputMap  map[int]TerraformStack
+		InputKey  int
+		Expected  []int
+		WantError bool
+	}{
+		{
+			"completely_empty",
+			map[int]TerraformStack{},
+			0,
+			[]int{},
+			false,
+		},
+		{
+			"empty_dependency",
+			map[int]TerraformStack{0: {
+				"testdata/invalid_stack",
+				StackConfig{},
+			}, 1: {
+				"testdata/non_tf_dir/valid_subdir",
+				StackConfig{},
+			}, 2: {
+				"testdata/valid_stack",
+				StackConfig{},
+			},
+			},
+			2,
+			[]int{},
+			false,
+		},
+		{
+			"simple_dependency",
+			map[int]TerraformStack{0: {
+				"testdata/invalid_stack",
+				StackConfig{},
+			}, 1: {
+				"testdata/non_tf_dir/valid_subdir",
+				StackConfig{},
+			}, 2: {
+				"testdata/valid_stack",
+				StackConfig{
+					Depends: []Dependency{
+						Dependency("testdata/non_tf_dir/valid_subdir"),
+					},
+				},
+			}},
+			2,
+			[]int{1},
+			false,
+		},
+		{
+			"simple_multiple_dependencies",
+			map[int]TerraformStack{0: {
+				"testdata/invalid_stack",
+				StackConfig{},
+			}, 1: {
+				"testdata/non_tf_dir/valid_subdir",
+				StackConfig{},
+			}, 2: {
+				"testdata/valid_stack",
+				StackConfig{
+					Depends: []Dependency{
+						Dependency("testdata/non_tf_dir/valid_subdir"),
+						Dependency("testdata/invalid_stack"),
+					},
+				},
+			}},
+			2,
+			[]int{1, 0},
+			false,
+		},
+		{
+			"recursive_dependencies",
+			map[int]TerraformStack{0: {
+				"testdata/invalid_stack",
+				StackConfig{},
+			}, 1: {
+				"testdata/non_tf_dir/valid_subdir",
+				StackConfig{
+					Depends: []Dependency{
+						Dependency("testdata/invalid_stack"),
+					},
+				},
+			}, 2: {
+				"testdata/valid_stack",
+				StackConfig{
+					Depends: []Dependency{
+						Dependency("testdata/non_tf_dir/valid_subdir"),
+					},
+				},
+			}},
+			2,
+			[]int{1, 0},
+			false,
+		},
+		{
+			"dependency_loop",
+			map[int]TerraformStack{0: {
+				"testdata/invalid_stack",
+				StackConfig{},
+			}, 1: {
+				"testdata/non_tf_dir/valid_subdir",
+				StackConfig{
+					Depends: []Dependency{
+						Dependency("testdata/valid_stack"),
+					},
+				},
+			}, 2: {
+				"testdata/valid_stack",
+				StackConfig{
+					Depends: []Dependency{
+						Dependency("testdata/non_tf_dir/valid_subdir"),
+					},
+				},
+			}},
+			2,
+			[]int{},
+			true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.Name, func(t *testing.T) {
+			deps, err := resolveDependencies(tc.InputMap, tc.InputKey, nil)
+			assert.Equal(t, err != nil, tc.WantError)
+			assert.Equal(t, tc.Expected, deps)
+		})
+	}
+}

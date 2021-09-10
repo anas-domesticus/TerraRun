@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
@@ -137,6 +138,40 @@ func pathToKey(stacks map[int]TerraformStack, path Dependency) int {
 		}
 	}
 	return -1
+}
+
+func resolveDependencies(stacks map[int]TerraformStack, stackKey int, knownDependencies []int) ([]int, error) {
+	if len(stacks[stackKey].config.Depends) == 0 {
+		return []int{}, nil
+	}
+	if len(stacks) <= stackKey {
+		return []int{}, nil
+	}
+	var dependencyKeys []int
+
+	for _, depend := range stacks[stackKey].config.Depends {
+		currentKey := pathToKey(stacks, depend)
+		if contains(knownDependencies, currentKey) {
+			return []int{}, errors.New("dependency loop detected")
+		}
+		dependencyKeys = append(dependencyKeys, currentKey)
+		subDependencies, err := resolveDependencies(stacks, currentKey, append(dependencyKeys, knownDependencies...))
+		if err != nil {
+			return []int{}, err
+		}
+		dependencyKeys = append(dependencyKeys, subDependencies...)
+	}
+
+	return dependencyKeys, nil
+}
+
+func contains(slice []int, check int) bool {
+	for _, v := range slice {
+		if v == check {
+			return true
+		}
+	}
+	return false
 }
 
 func CheckDependencies(stacks map[int]TerraformStack) error {
