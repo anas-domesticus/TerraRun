@@ -16,13 +16,13 @@ func TestFindAllStacks(t *testing.T) {
 			"empty_string",
 			"",
 			true,
-			map[int]TerraformStack{},
+			map[int]TerraformStack(nil),
 		},
 		{
 			"not_a_directory",
 			"somewhere_made_up",
 			true,
-			map[int]TerraformStack{},
+			map[int]TerraformStack(nil),
 		},
 		{
 			"empty dir",
