@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -137,7 +138,9 @@ func TestShouldRunForEnv(t *testing.T) {
 
 func TestForAllStacks(t *testing.T) {
 	testFunc := func(cfg Config, stack TerraformStack) (ExecuteOutput, error) {
-		return ExecuteOutput{}, nil
+		return ExecuteOutput{
+			Stack: stack,
+		}, nil
 	}
 	tests := []struct {
 		Name    string
@@ -451,6 +454,97 @@ func TestCheckDependencies(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			err := checkDependencies(tc.InputMap)
 			assert.Equal(t, err != nil, tc.WantError)
+		})
+	}
+}
+
+func TestDependenciesResolved(t *testing.T) {
+	tests := []struct {
+		Name      string
+		InputDeps []Dependency
+		InputMap  map[int]ExecuteOutput
+		Expected  bool
+	}{
+		{
+			"completely_empty",
+			[]Dependency{},
+			map[int]ExecuteOutput{},
+			true,
+		},
+		{
+			"no_dependencies",
+			[]Dependency{},
+			map[int]ExecuteOutput{
+				0: {TerraformStack{
+					"some_path",
+					StackConfig{},
+				},
+					&Command{},
+					[]byte{},
+					[]byte{},
+					nil,
+				},
+			},
+			true,
+		},
+		{
+			"resolved_dependencies",
+			[]Dependency{
+				Dependency("some_path"),
+			},
+			map[int]ExecuteOutput{
+				0: {TerraformStack{
+					"some_path",
+					StackConfig{},
+				},
+					&Command{},
+					[]byte{},
+					[]byte{},
+					nil,
+				},
+			},
+			true,
+		},
+		{
+			"failed_dependencies",
+			[]Dependency{
+				Dependency("some_path"),
+			},
+			map[int]ExecuteOutput{
+				0: {TerraformStack{
+					"some_path",
+					StackConfig{},
+				},
+					&Command{},
+					[]byte{},
+					[]byte{},
+					errors.New("dummy error"),
+				},
+			},
+			false,
+		},
+		{
+			"unresolveable_dependencies",
+			[]Dependency{
+				Dependency("some_path"),
+			},
+			map[int]ExecuteOutput{
+				0: {TerraformStack{
+					"some_other_path",
+					StackConfig{},
+				},
+					&Command{},
+					[]byte{},
+					[]byte{},
+					nil,
+				},
+			},
+			false,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.Name, func(t *testing.T) {
+			assert.Equal(t, dependenciesFulfilled(tc.InputDeps, tc.InputMap), tc.Expected)
 		})
 	}
 }

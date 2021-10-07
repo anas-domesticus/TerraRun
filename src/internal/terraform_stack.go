@@ -213,15 +213,48 @@ func ForAllStacks(cfg Config, fn func(Config, TerraformStack) (ExecuteOutput, er
 	if err != nil {
 		return nil, err
 	}
+
 	var outputs []ExecuteOutput
-	for _, s := range stacks {
-		if s.ShouldRunForEnv(cfg.Env) {
-			out, err := fn(cfg, s)
-			if err != nil {
-				return outputs, err
+	outputMap := make(map[int]ExecuteOutput)
+	previousOutputLen := 0
+	var alreadyRun []int
+
+	for {
+		for i, s := range stacks {
+			if s.ShouldRunForEnv(cfg.Env) && dependenciesFulfilled(s.config.Depends, outputMap) && !contains(alreadyRun, i) {
+				out, err := fn(cfg, s)
+				if err != nil {
+					return outputs, err
+				}
+				outputs = append(outputs, out)
+				outputMap[i] = out
+				alreadyRun = append(alreadyRun, i)
 			}
-			outputs = append(outputs, out)
 		}
+		if len(outputMap) == len(stacks) {
+			break
+		}
+		if previousOutputLen == len(outputMap) {
+			return outputs, errors.New("no longer progressing")
+		}
+		previousOutputLen = len(outputMap)
 	}
 	return outputs, nil
+}
+
+func dependenciesFulfilled(dependencies []Dependency, execOutputs map[int]ExecuteOutput) bool {
+	if len(dependencies) == 0 {
+		return true
+	}
+	for _, v := range dependencies {
+		for i := range execOutputs {
+			if execOutputs[i].Stack.Path != string(v) {
+				continue
+			}
+			if execOutputs[i].Error == nil {
+				return true
+			}
+		}
+	}
+	return false
 }
