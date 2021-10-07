@@ -18,6 +18,15 @@ This allows for some differences between environments, whilst encouraging consis
 
 The relevant tfvars file will be included in plans / applies to that environment.
 
+It also handles inter-stack dependencies, meaning that you can ensure things such as remote state lookups will have been updated & the values within them will be correct. This is also useful if you have split different aspects of a service into multiple state files & need to reference resources that have not yet been created.
+
+The format to define these is a file called `terrarun.yaml` in the root of the stack in question with the following format:
+```
+---
+depends:
+- testdata/non_tf_dir/valid_subdir
+```
+
 It also has a collated HTML output format for plans, currently a little rudimentary, but readable nonetheless. This allows you to view all the changes across all your stacks in a single file. 
 
 ### Commands

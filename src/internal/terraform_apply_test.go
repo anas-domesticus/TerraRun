@@ -49,7 +49,7 @@ func TestTFApply(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.Name, func(t *testing.T) {
-			_, _ = PlanStack(Config{BaseDir: "./"}, TerraformStack{Path: tc.Path})
+			PlanStack(Config{BaseDir: "./"}, TerraformStack{Path: tc.Path})
 			output, err := ApplyStack(Config{BaseDir: "./"}, TerraformStack{Path: tc.Path})
 
 			if tc.WantErr {

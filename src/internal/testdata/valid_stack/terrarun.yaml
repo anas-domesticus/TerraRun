@@ -1,0 +1,3 @@
+---
+depends:
+  - testdata/non_tf_dir/valid_subdir
