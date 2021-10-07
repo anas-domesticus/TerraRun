@@ -223,15 +223,13 @@ func FilterStacksForEnv(stacks map[int]TerraformStack, env Environment) map[int]
 	return output
 }
 
-func ForAllStacks(cfg Config, fn func(Config, TerraformStack) (ExecuteOutput, error)) ([]ExecuteOutput, error) {
+func ForAllStacks(cfg Config, fn func(Config, TerraformStack) (ExecuteOutput, error)) (map[int]ExecuteOutput, error) {
 	stacks, err := FindAllStacks(cfg.BaseDir)
 	if err != nil {
 		return nil, err
 	}
 
 	filteredStacks := FilterStacksForEnv(stacks, cfg.Env)
-
-	var outputs []ExecuteOutput
 	outputMap := make(map[int]ExecuteOutput)
 	previousOutputLen := 0
 	var alreadyRun []int
@@ -241,9 +239,8 @@ func ForAllStacks(cfg Config, fn func(Config, TerraformStack) (ExecuteOutput, er
 			if s.ShouldRunForEnv(cfg.Env) && dependenciesFulfilled(s.config.Depends, outputMap) && !contains(alreadyRun, i) {
 				out, err := fn(cfg, s)
 				if err != nil {
-					return outputs, err
+					return outputMap, err
 				}
-				outputs = append(outputs, out)
 				outputMap[i] = out
 				alreadyRun = append(alreadyRun, i)
 			}
@@ -252,11 +249,11 @@ func ForAllStacks(cfg Config, fn func(Config, TerraformStack) (ExecuteOutput, er
 			break
 		}
 		if previousOutputLen == len(outputMap) {
-			return outputs, errors.New("no longer progressing")
+			return outputMap, errors.New("no longer progressing")
 		}
 		previousOutputLen = len(outputMap)
 	}
-	return outputs, nil
+	return outputMap, nil
 }
 
 func dependenciesFulfilled(dependencies []Dependency, execOutputs map[int]ExecuteOutput) bool {
