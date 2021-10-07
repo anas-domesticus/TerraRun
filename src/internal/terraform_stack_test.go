@@ -136,6 +136,94 @@ func TestShouldRunForEnv(t *testing.T) {
 	assert.True(t, stack.ShouldRunForEnv(Environment{}))
 }
 
+func TestFilterStacksForEnv(t *testing.T) {
+	tests := []struct {
+		Name    string
+		Input   map[int]TerraformStack
+		WantOut map[int]TerraformStack
+		Environment
+	}{
+		{
+			"empty",
+			map[int]TerraformStack{},
+			map[int]TerraformStack{},
+			Environment{},
+		},
+		{
+			"no_env",
+			map[int]TerraformStack{0: {
+				Path:   "testdata/non_tf_dir/valid_subdir",
+				config: StackConfig{},
+			}},
+			map[int]TerraformStack{0: {
+				Path:   "testdata/non_tf_dir/valid_subdir",
+				config: StackConfig{},
+			}},
+			Environment{},
+		},
+		{
+			"wrong_env",
+			map[int]TerraformStack{0: {
+				Path:   "testdata/non_tf_dir/valid_subdir",
+				config: StackConfig{},
+			}},
+			map[int]TerraformStack{},
+			Environment{Name: "foo"},
+		},
+		{
+			"right_env",
+			map[int]TerraformStack{0: {
+				Path:   "testdata/non_tf_dir/valid_subdir",
+				config: StackConfig{},
+			}},
+			map[int]TerraformStack{0: {
+				Path:   "testdata/non_tf_dir/valid_subdir",
+				config: StackConfig{},
+			}},
+			Environment{Name: "dev"},
+		},
+		{
+			"right_env_multiple",
+			map[int]TerraformStack{0: {
+				Path:   "testdata/non_tf_dir/valid_subdir",
+				config: StackConfig{},
+			}, 1: {
+				Path:   "testdata/valid_stack",
+				config: StackConfig{},
+			}},
+			map[int]TerraformStack{0: {
+				Path:   "testdata/non_tf_dir/valid_subdir",
+				config: StackConfig{},
+			}, 1: {
+				Path:   "testdata/valid_stack",
+				config: StackConfig{},
+			}},
+			Environment{Name: "dev"},
+		},
+		{
+			"right_env_only_one",
+			map[int]TerraformStack{0: {
+				Path:   "testdata/non_tf_dir/valid_subdir",
+				config: StackConfig{},
+			}, 1: {
+				Path:   "testdata/valid_stack",
+				config: StackConfig{},
+			}},
+			map[int]TerraformStack{0: {
+				Path:   "testdata/non_tf_dir/valid_subdir",
+				config: StackConfig{},
+			}},
+			Environment{Name: "test"},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.Name, func(t *testing.T) {
+			stacks := FilterStacksForEnv(tc.Input, tc.Environment)
+			assert.Equal(t, tc.WantOut, stacks)
+		})
+	}
+}
+
 func TestForAllStacks(t *testing.T) {
 	testFunc := func(cfg Config, stack TerraformStack) (ExecuteOutput, error) {
 		return ExecuteOutput{

@@ -208,11 +208,28 @@ func IsTerraformStack(path string) bool {
 	return false
 }
 
+func FilterStacksForEnv(stacks map[int]TerraformStack, env Environment) map[int]TerraformStack {
+	if env.Name == "" {
+		return stacks
+	}
+	count := 0
+	output := make(map[int]TerraformStack)
+	for _, v := range stacks {
+		if v.ShouldRunForEnv(env) {
+			output[count] = v
+			count = count + 1
+		}
+	}
+	return output
+}
+
 func ForAllStacks(cfg Config, fn func(Config, TerraformStack) (ExecuteOutput, error)) ([]ExecuteOutput, error) {
 	stacks, err := FindAllStacks(cfg.BaseDir)
 	if err != nil {
 		return nil, err
 	}
+
+	filteredStacks := FilterStacksForEnv(stacks, cfg.Env)
 
 	var outputs []ExecuteOutput
 	outputMap := make(map[int]ExecuteOutput)
@@ -220,7 +237,7 @@ func ForAllStacks(cfg Config, fn func(Config, TerraformStack) (ExecuteOutput, er
 	var alreadyRun []int
 
 	for {
-		for i, s := range stacks {
+		for i, s := range filteredStacks {
 			if s.ShouldRunForEnv(cfg.Env) && dependenciesFulfilled(s.config.Depends, outputMap) && !contains(alreadyRun, i) {
 				out, err := fn(cfg, s)
 				if err != nil {
@@ -231,7 +248,7 @@ func ForAllStacks(cfg Config, fn func(Config, TerraformStack) (ExecuteOutput, er
 				alreadyRun = append(alreadyRun, i)
 			}
 		}
-		if len(outputMap) == len(stacks) {
+		if len(outputMap) == len(filteredStacks) {
 			break
 		}
 		if previousOutputLen == len(outputMap) {
