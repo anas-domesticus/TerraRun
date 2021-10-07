@@ -198,6 +198,13 @@ func TestForAllStacks(t *testing.T) {
 			2,
 			Environment{Name: "dev"},
 		},
+		{
+			"dependencies_read_test",
+			"testdata/valid_stack",
+			true,
+			0,
+			Environment{},
+		},
 	}
 
 	for _, tc := range tests {
@@ -205,6 +212,8 @@ func TestForAllStacks(t *testing.T) {
 			output, err := ForAllStacks(Config{BaseDir: tc.Input, Env: tc.Environment}, testFunc)
 			if tc.WantErr {
 				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
 			}
 			assert.Equal(t, tc.WantLen, len(output))
 		})
